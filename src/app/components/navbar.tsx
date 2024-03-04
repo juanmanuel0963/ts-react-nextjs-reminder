@@ -18,13 +18,13 @@ export function Navbar() {
           <Link href="/"><Image src={Logo} alt="Logo" />
           </Link>
           <Link href="/">
-            <p className="font-bold text-[#36485C] text-[17px]">Reminderx</p>
+            <p className="font-bold text-[#36485C] text-[17px]">Reminder-X</p>
           </Link>
         </div>
         <div className="hidden lg:flex pl-[74px] gap-x-[56px]">
           {navLinks.map((item, index) => (
             <p className="text-[#36485C] font-medium" key={index}>
-              <Link href="/register">{item.name}</Link>
+              <Link href="/login">{item.name}</Link>
             </p>
           ))}
         </div>
