@@ -16,6 +16,18 @@ export default function Login() {
                 <p className="text-center pt-6 text-[#36485C] lg:text-[18px] lg:leading-7">
                     Login
                 </p>
+                <form>
+                    <label htmlFor="username">Username</label>
+                    <input type="text" id="username" name="username" />
+
+                    <label htmlFor="email">Email</label>
+                    <input type="text" id="email" name="email" />
+
+                    <label htmlFor="channel">Channel</label>
+                    <input type="text" id="channel" name="channel" />
+
+                    <button>Submit</button>
+                </form>
                 <Footer />
             </div>
         </>
