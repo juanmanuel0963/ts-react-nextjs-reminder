@@ -1,6 +1,6 @@
 "use client";
-import { useSideBarToggle } from '../hooks/use-sidebar-toggle';
-import { SideNavItem } from '../types/type';
+import { useSideBarToggle } from './hooks/use-sidebar-toggle';
+import { SideNavItem } from './types/type';
 import classNames from 'classnames';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

@@ -1,30 +1,23 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import { Karla } from 'next/font/google'
-import '../globals.css'
-import { ThemeProvider } from '../components/theme-provider';
-import { SideBar } from '../components/sidebar';
-import Header from '../components/header';
-import PageWrapper from '../components/pagewrapper';
-
-const inter = Inter({ subsets: ['latin'] })
-
-const karla = Karla({
-    weight: ["200", "300", "400", "500", "600", "700", "800"],
-    subsets: ['latin'],
-    variable: "--font-karla"
-})
-
-export const metadata: Metadata = {
-    title: 'Reminderx',
-    description: 'Create custom reminders for your important commitments',
-}
+"use client"
+import '@/globals.css'
+import { ThemeProvider } from './components/theme-provider';
+import { SideBar } from './components/sidebar';
+import { useSideBarToggle } from './components/hooks/use-sidebar-toggle';
+import Header from './components/header';
+import classNames from 'classnames';
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const { toggleCollapse } = useSideBarToggle();
+    const bodyStyle = classNames("bg-background flex flex-col mt-16 py-4 p-4 h-full overflow-y-auto",
+        {
+            ["sm:pl-[21rem]"]: !toggleCollapse,
+            ["sm:pl-[6.4rem]"]: toggleCollapse,
+        });
+
     return (
         <ThemeProvider
             themes={['dark', 'custom', 'light']}
@@ -36,7 +29,9 @@ export default function AdminLayout({
                 <SideBar />
                 <div className="flex flex-col h-full w-full">
                     <Header />
-                    <PageWrapper children={children} />
+                    <div className={bodyStyle}>
+                        {children}
+                    </div>
                 </div>
             </>
         </ThemeProvider>
