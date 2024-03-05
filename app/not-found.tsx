@@ -1,6 +1,6 @@
-import { Footer } from "@/app/components/footer";
-import { Navbar } from "@/app/components/navbar";
-import { PageNotFound } from "@/app/components/not-found";
+import { Footer } from "./components/footer";
+import { Navbar } from "./components/navbar";
+import { PageNotFound } from "./components/not-found";
 
 export default function NotFound() {
   return (

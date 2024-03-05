@@ -1,14 +1,18 @@
-import { Navbar } from "@/app/components/navbar";
-import { Footer } from "@/app/components/footer";
+import { Navbar } from "../../components/navbar";
+import { Footer } from "../../components/footer";
 import { Metadata } from "next";
+import Link from 'next/link'
+
+
 
 export const metadata: Metadata = {
     title: {
-        absolute: "Register",
+        absolute: "Login",
     },
 };
 
-export default function Register() {
+export default function Login() {
+
     return (
         <>
             <Navbar />
@@ -22,15 +26,11 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="w-full lg:w-1/2 py-16 px-12">
-                            <h2 className="text-3xl mb-4">Sign up</h2>
+                            <h2 className="text-3xl mb-4">Sign in</h2>
                             <p className="mb-4">
-                                Create your account. It’s free and only take a minute
+                                Introduce your authentication credentials
                             </p>
                             <form action="#">
-                                <div className="grid grid-cols-2 gap-5">
-                                    <input type="text" placeholder="Firstname" className="border border-gray-400 py-1 px-2" />
-                                    <input type="text" placeholder="Surname" className="border border-gray-400 py-1 px-2" />
-                                </div>
                                 <div className="mt-5">
                                     <input type="text" placeholder="Email" className="border border-gray-400 py-1 px-2 w-full" />
                                 </div>
@@ -41,13 +41,13 @@ export default function Register() {
                                     <input type="password" placeholder="Confirm Password" className="border border-gray-400 py-1 px-2 w-full" />
                                 </div>
                                 <div className="mt-5">
-                                    <input type="checkbox" className="border border-gray-400" />
                                     <span>
-                                        I accept the <a href="#" className="text-purple-500 font-semibold">Terms of Use</a> &  <a href="#" className="text-purple-500 font-semibold">Privacy Policy</a>
+                                        <Link className="text-purple-500 font-semibold" href="/forgot-password">Forgot password</Link>
                                     </span>
                                 </div>
+
                                 <div className="mt-5">
-                                    <button className="w-full bg-purple-500 py-3 text-center text-white">Sign up</button>
+                                    <button className="w-full bg-purple-500 py-3 text-center text-white"><Link href="/admin">Sign in</Link></button>
                                 </div>
                             </form >
                         </div>
