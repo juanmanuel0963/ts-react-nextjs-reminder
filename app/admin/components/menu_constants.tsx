@@ -1,56 +1,75 @@
+import { RiAdminFill, RiCalendarEventFill } from "react-icons/ri";
 import { SideNavItemGroup } from "./types/type";
-import { BsEnvelope, BsGear, BsHouseDoor, BsKanban, BsListUl, BsQuestionCircle } from "react-icons/bs";
+import { BsBarChartFill, BsEnvelope, BsFillDiagram3Fill, BsGear, BsHouseDoor, BsKanban, BsListUl, BsQuestionCircle } from "react-icons/bs";
+import { FaUser, FaWhatsapp } from "react-icons/fa";
+import { MdLogout, MdManageAccounts } from "react-icons/md";
+import { IoHelpBuoy } from "react-icons/io5";
 
 
 
 export const SIDENAV_ITEMS: SideNavItemGroup[] = [
 
     {
-        title: "Dashboards",
+        title: "Dashboard",
         menuList: [{
             title: 'Dashboard',
-            path: '/',
-            icon: <BsHouseDoor size={20} />,
+            path: '../admin',
+            icon: <BsBarChartFill  size={20} />,            
         }]
     },
     {
         title: "Manage",
         menuList: [
             {
-                title: 'Products',
-                path: '/products',
-                icon: <BsKanban size={20} />,
-                submenu: true,
-                subMenuItems: [
-                    { title: 'All', path: '/products' },
-                    { title: 'New', path: '/products/new' },
-                ],
+                title: 'Companies',
+                path: '../admin/companies',
+                icon: <BsFillDiagram3Fill size={20} />,
             },
             {
-                title: 'Orders',
-                path: '/orders',
-                icon: <BsListUl size={20} />,
+                title: 'Admins',
+                path: '../admin/admins',
+                icon: <RiAdminFill size={20} />,
             },
             {
-                title: 'Feedbacks',
-                path: '/feedbacks',
-                icon: <BsEnvelope size={20} />,
+                title: 'Clients',
+                path: '../admin/clients',
+                icon: <FaUser size={20} />,
+            }
+        ]
+    },    
+    {
+        title: "Reminders",
+        menuList: [
+            {
+                title: 'Events',
+                path: '../admin/events',
+                icon: <RiCalendarEventFill size={20} />,
+            },
+            {
+                title: 'Reminders',
+                path: '../admin/reminders',
+                icon: <FaWhatsapp size={20} />,
             }
         ]
     },
     {
-        title: "Others",
+        title: "Settings",
         menuList: [
             {
-                title: 'Account',
-                path: '/account',
-                icon: <BsGear size={20} />,
+                title: 'Profile',
+                path: '../admin/profile',
+                icon: <MdManageAccounts size={20} />,
             },
             {
                 title: 'Help',
-                path: '/help',
-                icon: <BsQuestionCircle size={20} />,
-            }
+                path: '../admin/help',
+                icon: <IoHelpBuoy size={20} />,
+            },
+            {
+                title: 'Log out',
+                path: '/',
+                icon: <MdLogout size={20} />,
+            }            
         ]
     }
 
