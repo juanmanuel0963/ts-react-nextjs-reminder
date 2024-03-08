@@ -19,7 +19,7 @@ export const SideBarMenuItem = ({ item }: { item: SideNavItem }) => {
         setSubMenuOpen(!subMenuOpen);
     };
 
-    const inactiveLink = classNames("flex items-center min-h-[40px] h-full text-sidebar-foreground py-2 px-4 hover:text-sidebar-muted-foreground  hover:bg-sidebar-muted rounded-md transition duration-200",
+    const inactiveLink = classNames("flex items-center max-h-[20px] min-h-[20px] h-full text-sidebar-foreground py-2 px-4 hover:text-sidebar-muted-foreground  hover:bg-sidebar-muted rounded-md transition duration-200",
         { ["justify-center"]: toggleCollapse }
     );
 
@@ -66,7 +66,7 @@ export const SideBarMenuItem = ({ item }: { item: SideNavItem }) => {
             ) :
                 (<Link href={item.path} className={`${inactiveLink} ${item.path === pathname ? activeLink : ''}`}>
                     <div className='min-w-[20px]'>{item.icon}</div>
-                    {!toggleCollapse && (<span className="ml-3 leading-6 font-semibold">{item.title}</span>)}
+                    {!toggleCollapse && (<span className="ml-3 leading-6">{item.title}</span>)}
                 </Link>)}
         </>
     );

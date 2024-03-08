@@ -5,6 +5,7 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode:"class",
   theme: {
     extend: {
       backgroundImage: {
@@ -13,6 +14,7 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+    
   },
   plugins: [],
 };

@@ -10,7 +10,7 @@ import { IoHelpBuoy } from "react-icons/io5";
 export const SIDENAV_ITEMS: SideNavItemGroup[] = [
 
     {
-        title: "Dashboard",
+        title: "Home",
         menuList: [{
             title: 'Dashboard',
             path: '../admin',
@@ -21,18 +21,13 @@ export const SIDENAV_ITEMS: SideNavItemGroup[] = [
         title: "Manage",
         menuList: [
             {
-                title: 'Companies',
-                path: '../admin/companies',
-                icon: <BsFillDiagram3Fill size={20} />,
-            },
-            {
                 title: 'Admins',
-                path: '../admin/admins',
+                path: '../admin/admins-list',
                 icon: <RiAdminFill size={20} />,
             },
             {
                 title: 'Clients',
-                path: '../admin/clients',
+                path: '../admin/clients-list',
                 icon: <FaUser size={20} />,
             }
         ]
@@ -42,7 +37,7 @@ export const SIDENAV_ITEMS: SideNavItemGroup[] = [
         menuList: [
             {
                 title: 'Events',
-                path: '../admin/events',
+                path: '../admin/events-list',
                 icon: <RiCalendarEventFill size={20} />,
             },
             {

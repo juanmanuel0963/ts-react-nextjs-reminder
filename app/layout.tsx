@@ -6,7 +6,7 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Reminderx',
+  title: 'Reminder-X',
   description: 'Create custom reminders for your important commitments',
 }
 
@@ -16,8 +16,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.className}>
-      <body>
+    <html lang="en"  suppressHydrationWarning>
+      <body className={inter.className} >
         {children}
       </body>
     </html>

@@ -40,3 +40,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 > npm run dev //Running the application in development mode
 > npm run start
 > npm run build //To build the application for production //After running next build, Next.js will produce an out folder which contains the HTML/CSS/JS assets for your application.  By default, this will generate the .next folder.
+
+npx shadcn-ui@latest init      
+npx shadcn-ui@latest add checkbox
+npx shadcn-ui@latest add dropdown-menu
+npx shadcn-ui@latest add input
+npx shadcn-ui@latest add table
+npm install @tanstack/react-table
