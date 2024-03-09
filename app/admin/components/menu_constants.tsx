@@ -42,7 +42,7 @@ export const SIDENAV_ITEMS: SideNavItemGroup[] = [
             },
             {
                 title: 'Reminders',
-                path: '../admin/reminders',
+                path: '../admin/reminders-list',
                 icon: <FaWhatsapp size={20} />,
             }
         ]

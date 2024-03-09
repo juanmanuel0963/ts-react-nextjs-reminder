@@ -5,11 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 type FormValues = {
+  client: string
   event: string
   title: string
   message: string
   days_before: string
-  is_yearly: string
+  frequency: string
   time: string
   send_to_client: string
   send_to_admin: string
@@ -26,12 +27,12 @@ const schema = z.object({
 
 export default function Reminders() {
   const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
     defaultValues: {
       title: "",
       message: "",
       days_before: "",
-    },
-    resolver: zodResolver(schema)
+    },    
   });
 
   const { register, control, handleSubmit, formState } = form;
@@ -50,6 +51,16 @@ export default function Reminders() {
         <form id="myform" onSubmit={handleSubmit(onSubmit)} noValidate> {/* Validation will be handle by React*/}
           <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
             <div>
+              <label htmlFor="client" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Client</label>
+              <input type="text" id="client" {...register("client")} placeholder="Client" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.client?.message}</p>
+            </div>
+            <div>
+              <label htmlFor="event" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Event</label>
+              <input type="text" id="event" {...register("event")} placeholder="Event" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.event?.message}</p>
+            </div>
+            <div>
               <label htmlFor="title" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Title</label>
               <input type="text" id="title" {...register("title")} placeholder="Title" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
               <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.title?.message}</p>
@@ -58,6 +69,11 @@ export default function Reminders() {
               <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Message</label>
               <input type="text" id="message" {...register("message")} placeholder="Message" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
               <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.message?.message}</p>
+            </div>
+            <div>
+              <label htmlFor="frequency" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Frequency</label>
+              <input type="text" id="frequency" {...register("frequency")} placeholder="Frequency" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.frequency?.message}</p>
             </div>
             <div>
               <label htmlFor="days_before" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Days before</label>
