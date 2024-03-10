@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -26,22 +25,6 @@ const send_to_items = [
         id: "admin",
         label: "Admin",
     },
-    {
-        id: "applications",
-        label: "Applications",
-    },
-    {
-        id: "desktop",
-        label: "Desktop",
-    },
-    {
-        id: "downloads",
-        label: "Downloads",
-    },
-    {
-        id: "documents",
-        label: "Documents",
-    },
 ] as const
 
 const FormSchema = z.object({
@@ -50,17 +33,17 @@ const FormSchema = z.object({
     }),
 })
 
-export default function MyReminders() {
+export default function Shadcn_Checkbox() {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            send_to_items: ["client", "admin"],
+            send_to_items: [],
         },
     })
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
 
-        console.log('Form submitted', data);
+        console.log('Form submitted', { data });
 
         toast({
             title: "You submitted the following values:",
@@ -81,9 +64,9 @@ export default function MyReminders() {
                     render={() => (
                         <FormItem>
                             <div className="mb-4">
-                                <FormLabel className="text-base">Sidebar</FormLabel>
+                                <FormLabel className="text-base">Send reminder to</FormLabel>
                                 <FormDescription>
-                                    Select the items you want to display in the sidebar.
+                                    Select the recipients of the reminder
                                 </FormDescription>
                             </div>
                             {send_to_items.map((item) => (
