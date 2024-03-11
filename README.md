@@ -49,4 +49,6 @@ npx shadcn-ui@latest add table
 npx shadcn-ui@latest add form
 npx shadcn-ui@latest add toast
 npx shadcn-ui@latest add select
+npx shadcn-ui@latest add calendar
+npx shadcn-ui@latest add popover
 npm install @tanstack/react-table

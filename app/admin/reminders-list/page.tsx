@@ -9,7 +9,7 @@ async function getData(): Promise<Reminder[]> {
     {
       id: "d8rf45t1",
       client: "Magda Duarte",
-      event: "Póliza de auto URS573",
+      commitment: "Póliza de auto URS573",
       title: "Recordatorio Póliza Auto URS573",
       message: "El vencimiento del pago de su póliza es el día de hoy.",
       days_before: "0",
@@ -18,7 +18,7 @@ async function getData(): Promise<Reminder[]> {
     {
       id: "45df3485",
       client: "Magda Duarte",
-      event: "Póliza de auto URS573",
+      commitment: "Póliza de auto URS573",
       title: "Recordatorio Póliza Auto URS573",
       message: "El vencimiento del pago de su póliza es el día de mañana.",
       days_before: "1",
@@ -27,7 +27,7 @@ async function getData(): Promise<Reminder[]> {
     {
       id: "4rt56y7u",
       client: "Magda Duarte",
-      event: "Póliza de auto URS573",
+      commitment: "Póliza de auto URS573",
       title: "Recordatorio Póliza Auto URS573",
       message: "El vencimiento del pago de su póliza es el próximo día 30 de mes.",
       days_before: "5",
@@ -36,7 +36,7 @@ async function getData(): Promise<Reminder[]> {
     {
       id: "4rt56y7u",
       client: "Magda Duarte",
-      event: "Póliza de auto URS573",
+      commitment: "Póliza de auto URS573",
       title: "Renovación Póliza Auto Magda Duarte",
       message: "La Renovación de la póliza de auto URS573 vence el próximo día 30 de mes.",
       days_before: "30",
@@ -45,7 +45,7 @@ async function getData(): Promise<Reminder[]> {
     {
       id: "er52fg1g",
       client: "",
-      event: "Recibo de Gas apartamento",
+      commitment: "Recibo de Gas apartamento",
       title: "Recordatorio Pagar recibo gas apartamento",
       message: "El vencimiento del recibo de gas es hoy.",
       days_before: "0",

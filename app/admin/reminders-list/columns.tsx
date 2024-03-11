@@ -7,7 +7,7 @@ import { ColumnDef } from "@tanstack/react-table"
 export type Reminder = {
   id: string
   client: string
-  event: string
+  commitment: string
   title: string
   message: string
   days_before: string
@@ -24,8 +24,8 @@ export const columns: ColumnDef<Reminder>[] = [
     header: "Client",
   },    
   {
-    accessorKey: "event",
-    header: "Event",
+    accessorKey: "commitment",
+    header: "Commitment",
   },  
   {
     accessorKey: "title",

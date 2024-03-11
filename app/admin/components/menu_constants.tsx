@@ -36,8 +36,8 @@ export const SIDENAV_ITEMS: SideNavItemGroup[] = [
         title: "Reminders",
         menuList: [
             {
-                title: 'Events',
-                path: '../admin/events-list',
+                title: 'Commitments',
+                path: '../admin/commitments-list',
                 icon: <RiCalendarEventFill size={20} />,
             },
             {

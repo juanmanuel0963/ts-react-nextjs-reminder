@@ -80,7 +80,7 @@ export default function Shadcn_Input() {
         },
     });
 
-    const accountType = form.watch("accountType");
+    const accountTypex = form.watch("accountType");
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
         console.log({ values });
@@ -136,7 +136,7 @@ export default function Shadcn_Input() {
                                     );
                                 }}
                             />
-                            {accountType === "company" && (
+                            {accountTypex === "company" && (
                                 <FormField
                                     control={form.control}
                                     name="companyName"

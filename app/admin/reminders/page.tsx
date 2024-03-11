@@ -47,6 +47,8 @@ const message_channel = [
 ] as const;
 const formSchema = z
     .object({
+        client: z.enum(["9e4df5y8", "7e47t8h2"]),
+        commitment: z.enum(["d5f4e7d4", "g1h4j1k4"]),
         title: z.string().min(1, {
             message: "Title is required",
         }),
@@ -64,7 +66,7 @@ const formSchema = z
             message: "You have to select the message channel",
         }),
 
-    });
+    }); 
 
 export default function Reminders() {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -78,8 +80,9 @@ export default function Reminders() {
         },
     });
 
-    const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log({ values });
+
+    const handleSubmit = (data: z.infer<typeof formSchema>) => {
+        console.log('Form submitted', { data });
     };
 
     return (
@@ -90,6 +93,52 @@ export default function Reminders() {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)}>
                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+                            <FormField
+                                control={form.control}
+                                name="client"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormLabel htmlFor="client">Client</FormLabel>
+                                            <Select  onValueChange={field.onChange}>
+                                                <FormControl id="client">
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a Client" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="9e4df5y8">Magda Duarte</SelectItem>
+                                                    <SelectItem value="7e47t8h2">Jorge Briceño</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="commitment"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormLabel htmlFor="commitment">Commitment</FormLabel>
+                                            <Select  onValueChange={field.onChange}>
+                                                <FormControl id="commitment">
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a Commitment" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="d5f4e7d4">Póliza Auto URS</SelectItem>
+                                                    <SelectItem value="g1h4j1k4">Póliza Salud</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />                            
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -130,7 +179,6 @@ export default function Reminders() {
                                 )}
                             />
                             <div>
-                                
                             </div>
                             <FormField
                                 control={form.control}
@@ -138,7 +186,7 @@ export default function Reminders() {
                                 render={() => (
                                     <FormItem>
                                         <div className="mb-4">
-                                            <FormLabel htmlFor="message">Send reminder to</FormLabel>
+                                            <FormLabel htmlFor="message">Recipients</FormLabel>
                                             <FormDescription id="message">
                                                 Select the recipients of the reminder
                                             </FormDescription>
@@ -186,7 +234,7 @@ export default function Reminders() {
                                 render={() => (
                                     <FormItem>
                                         <div className="mb-4">
-                                            <FormLabel htmlFor="message">Message channel</FormLabel>
+                                            <FormLabel htmlFor="message">Message</FormLabel>
                                             <FormDescription id="message">
                                                 Select the channel for sending the reminder
                                             </FormDescription>
@@ -227,7 +275,7 @@ export default function Reminders() {
                                         <FormMessage />
                                     </FormItem>
                                 )}
-                            />                            
+                            />
                         </div>
                         <Button type="submit" className="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                             Save
