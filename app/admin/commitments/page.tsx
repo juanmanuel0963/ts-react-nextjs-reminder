@@ -31,15 +31,14 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 const FormSchema = z.object({
-    //client: z.enum(["9e4df5y8", "7e47t8h2"]),
     client: z.string({
         required_error: "Client is required",
     }),
-    title: z.string().min(1, {
-        message: "Title is required",
+    commitment: z.string().min(1, {
+        message: "Commitment is required",
     }),
     date: z.date({
-        required_error: "A date is required",
+        required_error: "Date is required",
     }),
 });
 export default function Commitments() {
@@ -47,7 +46,7 @@ export default function Commitments() {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            title: "",
+            commitment: "",
         },
     })
 
@@ -87,8 +86,8 @@ export default function Commitments() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="9e4df5y8">Magda Duarte</SelectItem>
-                                                    <SelectItem value="7e47t8h2">Jorge Briceño</SelectItem>
+                                                    <SelectItem value="Magda Duarte">Magda Duarte</SelectItem>
+                                                    <SelectItem value="Jorge Briceño">Jorge Briceño</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -98,12 +97,12 @@ export default function Commitments() {
                             />
                             <FormField
                                 control={form.control}
-                                name="title"
+                                name="commitment"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel htmlFor="title">Title</FormLabel>
+                                        <FormLabel htmlFor="commitment">Commitment</FormLabel>
                                         <FormControl>
-                                            <Input type="text" id="title" placeholder="Title" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                                            <Input type="text" id="commitment" placeholder="Commitment" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
                                         </FormControl>
                                         <FormMessage></FormMessage>
                                     </FormItem>
@@ -150,11 +149,9 @@ export default function Commitments() {
                             <div></div>
                             <div></div>
                         </div>
-
                         <Button type="submit" className="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                             Save
                         </Button>
-
                     </form>
                 </Form>
             </div>

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { toast } from "@/components/ui/use-toast"
 import {
     Form,
     FormControl,
@@ -47,26 +49,32 @@ const message_channel = [
 ] as const;
 const formSchema = z
     .object({
-        client: z.enum(["9e4df5y8", "7e47t8h2"]),
-        commitment: z.enum(["d5f4e7d4", "g1h4j1k4"]),
+        client: z.string({
+            required_error: "Client is required",
+        }),
+        commitment: z.string({
+            required_error: "Commitment is required",
+        }),
         title: z.string().min(1, {
             message: "Title is required",
         }),
         message: z.string().min(1, {
             message: "Message is required",
         }),
+        frequency: z.string({
+            required_error: "Frequency is required",
+        }),
         days_before: z.string().refine(
             (val) => !Number.isNaN(parseInt(val, 10)) && parseInt(val, 10) >= 0, {
-            message: "Days before must 0 or greater"
+            message: "Days before must be 0 or greater"
         }),
         message_recipients: z.array(z.string()).refine((value) => value.some((item) => item), {
-            message: "You have to select the recipient of the message",
+            message: "Select the recipients of the reminder",
         }),
         message_channel: z.array(z.string()).refine((value) => value.some((item) => item), {
-            message: "You have to select the message channel",
+            message: "Select the channel for sending the reminder",
         }),
-
-    }); 
+    });
 
 export default function Reminders() {
     const form = useForm<z.infer<typeof formSchema>>({
@@ -82,11 +90,20 @@ export default function Reminders() {
 
 
     const handleSubmit = (data: z.infer<typeof formSchema>) => {
+
         console.log('Form submitted', { data });
+
+        toast({
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+                </pre>
+            ),
+        })
     };
 
     return (
-
         <main >
             <h2 className="text-3xl font-bold tracking-tight my-4">Create Reminder</h2>
             <div className="flex-1 space-y-4">
@@ -100,15 +117,15 @@ export default function Reminders() {
                                     return (
                                         <FormItem>
                                             <FormLabel htmlFor="client">Client</FormLabel>
-                                            <Select  onValueChange={field.onChange}>
+                                            <Select onValueChange={field.onChange}>
                                                 <FormControl id="client">
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a Client" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="9e4df5y8">Magda Duarte</SelectItem>
-                                                    <SelectItem value="7e47t8h2">Jorge Briceño</SelectItem>
+                                                    <SelectItem value="Magda Duarte">Magda Duarte</SelectItem>
+                                                    <SelectItem value="Jorge Briceño">Jorge Briceño</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -123,22 +140,22 @@ export default function Reminders() {
                                     return (
                                         <FormItem>
                                             <FormLabel htmlFor="commitment">Commitment</FormLabel>
-                                            <Select  onValueChange={field.onChange}>
+                                            <Select onValueChange={field.onChange}>
                                                 <FormControl id="commitment">
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a Commitment" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="d5f4e7d4">Póliza Auto URS</SelectItem>
-                                                    <SelectItem value="g1h4j1k4">Póliza Salud</SelectItem>
+                                                    <SelectItem value="Póliza Auto URS">Póliza Auto URS</SelectItem>
+                                                    <SelectItem value="Póliza Salud">Póliza Salud</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
                                         </FormItem>
                                     );
                                 }}
-                            />                            
+                            />
                             <FormField
                                 control={form.control}
                                 name="title"
@@ -178,8 +195,40 @@ export default function Reminders() {
                                     </FormItem>
                                 )}
                             />
-                            <div>
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="frequency"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        <FormLabel htmlFor="frequency">Frequency</FormLabel>
+                                        <FormControl id="frequency">
+                                            <RadioGroup
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                                className="flex flex-col space-y-1"
+                                            >
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl>
+                                                        <RadioGroupItem value="monthly" />
+                                                    </FormControl>
+                                                    <FormLabel className="font-normal">
+                                                        Monthly
+                                                    </FormLabel>
+                                                </FormItem>
+                                                <FormItem className="flex items-center space-x-3 space-y-0">
+                                                    <FormControl>
+                                                        <RadioGroupItem value="yearly" />
+                                                    </FormControl>
+                                                    <FormLabel className="font-normal">
+                                                        Yearly
+                                                    </FormLabel>
+                                                </FormItem>
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="message_recipients"
@@ -188,7 +237,7 @@ export default function Reminders() {
                                         <div className="mb-4">
                                             <FormLabel htmlFor="message">Recipients</FormLabel>
                                             <FormDescription id="message">
-                                                Select the recipients of the reminder
+
                                             </FormDescription>
                                         </div>
                                         {message_recipients.map((item) => (
@@ -236,7 +285,7 @@ export default function Reminders() {
                                         <div className="mb-4">
                                             <FormLabel htmlFor="message">Message</FormLabel>
                                             <FormDescription id="message">
-                                                Select the channel for sending the reminder
+
                                             </FormDescription>
                                         </div>
                                         {message_channel.map((item) => (
@@ -276,6 +325,7 @@ export default function Reminders() {
                                     </FormItem>
                                 )}
                             />
+                            <div></div>
                         </div>
                         <Button type="submit" className="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                             Save
