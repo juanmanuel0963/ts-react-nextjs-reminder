@@ -53,3 +53,20 @@ npx shadcn-ui@latest add calendar
 npx shadcn-ui@latest add popover
 npx shadcn-ui@latest add radio-group
 npm install @tanstack/react-table
+npm install aws-sdk aws4 @types/aws4
+    
+
+
+
+- Download from https://www.mogdb.io/en/downloads/psycopg2/all 
+    psycopg2-5.0.0.2-cp312-cp312-manylinux_2_17_x86_64.linux_x86_64.whl
+    psycopg2-5.0.0.2-cp311-cp311-manylinux_2_17_x86_64.linux_x86_64.whl
+
+    Unzip it
+    copy below folders to root python function folder
+    psycopg2
+    psycopg2.libs
+    psycopg2-5.0.0.2.dist-info
+
+- Test python lambda function:
+python-lambda-local -f lambda_handler admins_get_all.py event.json
