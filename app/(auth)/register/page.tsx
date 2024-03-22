@@ -1,25 +1,20 @@
 "use client"
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Navbar } from "../components/navbar";
 import { Footer } from "../components/footer";
-
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation'
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { CreateAccessKeyCommand, IAMClient } from "@aws-sdk/client-iam";
-//import * as AWS from 'aws-sdk';
-import * as aws4 from 'aws4';
-import * as https from 'https';
+import * as z from "zod";
 
 const formSchema = z
     .object({
@@ -45,11 +40,14 @@ const formSchema = z
         },
         {
             message: "Passwords do not match",
-            path: ["passwordConfirm"],
+            path: ["password_confirm"],
         }
     );
 
 export default function Register() {
+
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -63,36 +61,44 @@ export default function Register() {
         },
     });
 
-    const handleSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log('Form submitted', { values });
-        console.log(values.first_name);
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
+
+        console.log('Form submitted', { data });
+        console.log(data.first_name);
 
         let bodyData = {
-            firstName: values.first_name,
-            surName: values.sur_name,
-            email: values.email,
-            password: values.password,
-            countryCode: values.country_code,
-            phone: values.phone_number,
+            firstName: data.first_name,
+            surName: data.sur_name,
+            email: data.email,
+            password: data.password,
+            countryCode: data.country_code,
+            phone: data.phone_number,
             isSuperAdmin: false,
-            isAdmin: true            
+            isAdmin: true
         };
 
         console.log(JSON.stringify(bodyData));
 
-        fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins', {
+        const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins', {
             method: 'POST',
             body: JSON.stringify(bodyData),
         })
             .then((response) => response.json())
             .then((data) => {
-                // Handle the response data
+                
                 console.log(data);
-                alert("Admin added successfully");
+                
+                // Assuming the data returned includes an indication of successful creation
+                if (data.ID > 0) {
+                    console.log(data.ID);
+                    alert("Admin created successfully");
+                    router.push('/admin');
+                }
             })
             .catch((error) => {
-                // Handle any errors
-                console.log(error);
+                // Handle errors
+                alert("Admin not created");
+                console.log(error);                
             });
     };
 
@@ -107,12 +113,12 @@ export default function Register() {
                             <div>
                                 <p className="text-black">Create your account. It’s free and only take a minute.</p>
                             </div>
-                        </div>
+                            2                        </div>
                         <div className="w-full lg:w-1/2 py-16 px-12">
                             <h2 className="text-3xl mb-4">Sign up</h2>
                             <div className="flex-1 space-y-4">
                                 <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(handleSubmit)}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
                                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
                                             <FormField
                                                 control={form.control}

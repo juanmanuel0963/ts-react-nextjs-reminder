@@ -54,6 +54,7 @@ npx shadcn-ui@latest add popover
 npx shadcn-ui@latest add radio-group
 npm install @tanstack/react-table
 npm install aws-sdk aws4 @types/aws4
+npm install react-router-dom
     
 
 
