@@ -85,20 +85,24 @@ export default function Register() {
         })
             .then((response) => response.json())
             .then((data) => {
-                
+
                 console.log(data);
-                
+
                 // Assuming the data returned includes an indication of successful creation
                 if (data.ID > 0) {
                     console.log(data.ID);
                     alert("Admin created successfully");
-                    router.push('/admin');
+                    router.push(`/admin?adminID=${data.ID}`);
+                } else {
+                    // Handle errors
+                    alert("Admin not created");
+                    console.log(data);
                 }
             })
             .catch((error) => {
                 // Handle errors
                 alert("Admin not created");
-                console.log(error);                
+                console.log(error);
             });
     };
 
@@ -113,7 +117,7 @@ export default function Register() {
                             <div>
                                 <p className="text-black">Create your account. It’s free and only take a minute.</p>
                             </div>
-                            2                        </div>
+                        </div>
                         <div className="w-full lg:w-1/2 py-16 px-12">
                             <h2 className="text-3xl mb-4">Sign up</h2>
                             <div className="flex-1 space-y-4">
