@@ -72,7 +72,7 @@ export default function Register() {
             email: data.email,
             password: data.password,
             countryCode: data.country_code,
-            phone: data.phone_number,
+            phoneNumber: data.phone_number,
             isSuperAdmin: false,
             isAdmin: true
         };
@@ -86,7 +86,7 @@ export default function Register() {
             .then((response) => response.json())
             .then((data) => {
 
-                console.log(data);
+                //console.log(data);
 
                 // Assuming the data returned includes an indication of successful creation
                 if (data.ID > 0) {
