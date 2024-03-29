@@ -95,8 +95,8 @@ export default function Register() {
                     router.push(`/admin?adminID=${data.ID}`);
                 } else {
                     // Handle errors
-                    alert("Admin not created");
                     console.log(data);
+                    alert("Admin not created. " + data.error);                    
                 }
             })
             .catch((error) => {
