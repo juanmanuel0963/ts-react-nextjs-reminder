@@ -86,22 +86,20 @@ export default function Register() {
             .then((response) => response.json())
             .then((data) => {
 
-                //console.log(data);
-
                 // Assuming the data returned includes an indication of successful creation
                 if (data.ID > 0) {
                     console.log(data.ID);
-                    alert("Admin created successfully");
+                    alert("Admin created successfully.");
                     router.push(`/admin?adminID=${data.ID}`);
                 } else {
                     // Handle errors
                     console.log(data);
-                    alert("Admin not created. " + data.error);                    
+                    alert("Admin not created. " + data.error);
                 }
             })
             .catch((error) => {
                 // Handle errors
-                alert("Admin not created");
+                alert("Admin not created. " + error);
                 console.log(error);
             });
     };
