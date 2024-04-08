@@ -1,50 +1,111 @@
 "use client"
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import * as z from "zod";
+import { getSessionForClient } from "@/lib/actions"
 
-type FormValues = {
-  first_name: string
-  sur_name: string
-  email: string
-  country_code: string
-  phone_number: string
-};
-
-const schema = z.object({
-  first_name: z.string().min(1, "First name is required"),
-  sur_name: z.string().min(1, "Sur name is required"),
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Email format is not valid"),
-  country_code: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)) && parseInt(val, 10) > 0, {
-    message: "Country code must be greater than 0"
-  }),  
-  phone_number: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)) && parseInt(val, 10) > 0, {
-    message: "Phone number must be greater than 0"
+const formSchema = z
+  .object({
+    first_name: z.string().min(1, {
+      message: "First name is required",
+    }),
+    sur_name: z.string().min(1, {
+      message: "Sur name is required",
+    }),
+    country_code: z.string().min(1, {
+      message: "Country code is required",
+    }),
+    phone_number: z.string().min(1, {
+      message: "Phone number is required",
+    }),
+    email: z.string().email(),
+    password: z.string().min(6),
+    password_confirm: z.string(),
   })
-});
+  .refine(
+    (data) => {
+      return data.password === data.password_confirm;
+    },
+    {
+      message: "Passwords do not match",
+      path: ["password_confirm"],
+    }
+  );
 
 export default function Admins() {
-  const form = useForm<FormValues>({
+
+  const router = useRouter();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       first_name: "",
       sur_name: "",
-      email: "",
       country_code: "",
-      phone_number: ""
+      phone_number: "",
+      email: "",
+      password: "",
+      password_confirm: "",
     },
-    resolver: zodResolver(schema)
   });
 
-  const { register, control, handleSubmit, formState } = form;
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
-  const { errors } = formState;
+    const session = await getSessionForClient()
+    const jsonSession = JSON.parse(session)
 
-  const onSubmit = (data: FormValues) => {
-    console.log('Form submitted', data);
+
+    let bodyData = {
+      firstName: data.first_name,
+      surName: data.sur_name,
+      email: data.email,
+      password: data.password,
+      countryCode: data.country_code,
+      phoneNumber: data.phone_number,
+      isSuperAdmin: false,
+      isAdmin: true,
+      parentAdminID: jsonSession.adminId
+    };
+
+    console.log('Current Admin Id: ', jsonSession.adminId);
+    console.log('Is Admin logged in: ', jsonSession.isLoggedIn);
+    console.log('Form submitted: ', { data });
+    console.log(JSON.stringify(bodyData));
+
+    const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins', {
+      method: 'POST',
+      body: JSON.stringify(bodyData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+
+        // Assuming the data returned includes an indication of successful creation
+        if (data.ID > 0) {
+          console.log(data.ID);
+          alert("Admin created successfully.");
+          router.push(`./admins-list/`);
+        } else {
+          // Handle errors
+          console.log(data);
+          alert("Admin not created. " + data.error);
+        }
+      })
+      .catch((error) => {
+        // Handle errors
+        alert("Admin not created. " + error);
+        console.log(error);
+      });
   };
 
   return (
@@ -52,40 +113,115 @@ export default function Admins() {
       <h2 className="text-3xl font-bold tracking-tight my-4">Create Admin</h2>
 
       <div className="flex-1 space-y-4">
-        <form onSubmit={handleSubmit(onSubmit)} noValidate> {/* Validation will be handle by React*/}
-          <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-            <div>
-              <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">First name</label>
-              <input type="text" id="first_name" {...register("first_name")} placeholder="First name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.first_name?.message}</p>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="first_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="first_name">First name</FormLabel>
+                    <FormControl>
+                      <Input type="text" id="first_name" placeholder="First name" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                    </FormControl>
+                    <FormMessage></FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="sur_name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="sur_name">Sur name</FormLabel>
+                    <FormControl>
+                      <Input type="text" id="sur_name" placeholder="Sur name" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                    </FormControl>
+                    <FormMessage></FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="country_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="country_code">Country code</FormLabel>
+                    <FormControl>
+                      <Input type="number" id="country_code" placeholder="Country code" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                    </FormControl>
+                    <FormMessage></FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="phone_number"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel htmlFor="phone_number">Phone number</FormLabel>
+                    <FormControl>
+                      <Input type="number" id="phone_number" placeholder="Phone number" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                    </FormControl>
+                    <FormMessage></FormMessage>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel htmlFor="email">Email address</FormLabel>
+                      <FormControl>
+                        <Input type="email" id="email" placeholder="Email address" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div></div>
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Password" type="password" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="password_confirm"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Password confirm</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Password confirm" type="password" {...field} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-purple-500 dark:focus:border-purple-500" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <div></div>
+              <div></div>
             </div>
-            <div>
-              <label htmlFor="sur_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sur name</label>
-              <input type="text" id="sur_name" {...register("sur_name")} placeholder="Sur name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.sur_name?.message}</p>
-            </div>
-            <div>
-              <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-              <input type="text" id="email" {...register("email")} placeholder="Email" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.email?.message}</p>
-            </div>
-            <div></div>
-            <div>
-              <label htmlFor="country_code" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Country code</label>
-              <input type="number" id="country_code" {...register("country_code")} placeholder="Country code" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.country_code?.message}</p>
-            </div>
-            <div>
-              <label htmlFor="phone_number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone number</label>
-              <input type="number" id="phone_number" {...register("phone_number")} placeholder="Phone number" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-              <p className="mb-2 mt-2 text-sm text-red-600 dark:text-red-500">{errors.phone_number?.message}</p>
-            </div>
-          </div>
-          <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-1">
-            <button className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Save</button>
-          </div>
-        </form >
-        <DevTool control={control} />
+            <Button type="submit" className="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+              Submit
+            </Button>
+          </form>
+        </Form>
       </div>
     </>
   );

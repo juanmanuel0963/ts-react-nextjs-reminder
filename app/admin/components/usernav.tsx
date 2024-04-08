@@ -3,8 +3,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
+import { getSessionForClient } from "@/lib/actions"
 
 export function UserNav() {
+    
+    //const session = await getSession()
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
