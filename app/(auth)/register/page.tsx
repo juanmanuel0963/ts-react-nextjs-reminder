@@ -15,6 +15,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import * as z from "zod";
+import { getSessionForClient } from "@/lib/actions"
+import { saveSession } from "@/lib/actions"
 
 const formSchema = z
     .object({
@@ -84,13 +86,14 @@ export default function Register() {
             body: JSON.stringify(bodyData),
         })
             .then((response) => response.json())
-            .then((data) => {
+            .then(async (data) => {
 
                 // Assuming the data returned includes an indication of successful creation
                 if (data.ID > 0) {
                     console.log(data.ID);
+                    await saveSession(data.ID)
                     alert("Admin created successfully.");
-                    router.push(`/admin?adminID=${data.ID}`);
+                    router.push(`/admin`);
                 } else {
                     // Handle errors
                     console.log(data);

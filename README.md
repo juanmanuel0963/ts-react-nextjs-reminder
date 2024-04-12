@@ -56,8 +56,6 @@ npm install @tanstack/react-table
 npm install aws-sdk aws4 @types/aws4
 npm install react-router-dom
 npm install iron-session
-npx shadcn-ui@latest add table
-npm install @tanstack/react-table
 
 
 - Download from https://www.mogdb.io/en/downloads/psycopg2/all 

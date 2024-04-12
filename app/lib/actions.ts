@@ -5,6 +5,9 @@ import { getIronSession } from "iron-session";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { Admin, columns } from "./columns"
+import { DataTable } from "@/components/ui/data-table"
+
 
 let username = "john";
 let isPro = true;
@@ -56,8 +59,57 @@ export async function saveSession(adminId: string ) {
   session.isLoggedIn = true;
     
   await session.save();
+};
+/*
+export async function getData(): Promise<Admin[]> {
 
+  // Fetch data from your API here.
+  const data = [
+    {
+      id: "728ed52f",
+      first_name: "Juan",
+      sur_name: "Diaz",
+      email: "juanmanuel0963@gmail.com",
+      country_code: "57",
+      phone_number: "3209939019"
+    },
+    {
+      id: "598egh7i",
+      first_name: "Luz Mery",
+      sur_name: "Coronado",
+      email: "luzmerycoronado@gmail.com",
+      country_code: "57",
+      phone_number: "3212408192"
+    },
+  ];
+
+  return data;
+};
+*/
+/*
+export async function getAdmins() : Promise<Admin[]>{
+  
+  let rows: Admin[];
+
+  const api = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins', {
+    method: 'GET',
+  })
+    .then((response) => response.json())
+    .then(async (data) => {
+
+      console.log("data");
+      console.log(data);
+
+      rows = data;
+
+      console.log("rows");
+      console.log(rows);    
+
+    });
+
+    return rows;
 }
+*/
 
 
 /*

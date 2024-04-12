@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/form";
 import * as z from "zod";
 import Link from 'next/link'
-import { getSessionForClient } from "@/lib/actions"
 import { saveSession } from "@/lib/actions"
 
 const formSchema = z
@@ -39,6 +38,8 @@ export default function Register() {
 
     const onSubmit = (data: z.infer<typeof formSchema>) => {
 
+        let rows: never[] = [];
+
         console.log('Form submitted', { data });
 
         let bodyData = {
@@ -48,33 +49,39 @@ export default function Register() {
 
         console.log(JSON.stringify(bodyData));
 
-        const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins_login', {
+        const api = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins_login', {
             method: 'POST',
             body: JSON.stringify(bodyData),
         })
-            .then((data) => {
+            .then((response) => response.json())
+            .then(async (data) => {
 
-                console.log(data)
-                /*
-                                // Assuming the data returned includes an indication of successful creation
-                                if (data.ID > 0) {
-                                    console.log(data.ID);
-                                    await saveSession(data.ID)
-                                    alert("Admin logged in successfully.");
-                                    router.push(`/admin?adminID=${data.ID}`);
-                
-                                } else {
-                                    // Handle errors
-                                    console.log(data);
-                                    alert("Admin not logged in. " + data.error);
-                                }
-                */
+                console.log("data");
+                console.log(data);
+
+                rows = data;
+
+                console.log("rows 1");
+                console.log(rows);                
+
+                // Assuming the data returned includes an indication of successful creation
+                if (data.ID > 0) {
+                    console.log(data.ID);
+                    await saveSession(data.ID)
+                    alert("Admin logged in successfully.");
+                    router.push(`/admin`);
+                } else {
+                    // Handle errors
+                    console.log(data);
+                    alert("Admin not logged in. " + data.error);
+                }
             })
             .catch((error) => {
                 // Handle errors
                 alert("Error loggin in. " + error);
                 console.log(error);
             });
+
     };
 
     return (
