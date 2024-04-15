@@ -65,7 +65,6 @@ export default function Admins() {
     const session = await getSessionForClient()
     const jsonSession = JSON.parse(session)
 
-
     let bodyData = {
       firstName: data.first_name,
       surName: data.sur_name,
