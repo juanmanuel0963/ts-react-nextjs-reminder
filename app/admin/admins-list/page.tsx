@@ -1,5 +1,5 @@
 "use client"
-import { Admin, columns } from "../../lib/columns"
+import { Admin, columns } from "@/lib/columns-admin"
 import { DataTable } from "@/components/ui/data-table"
 import Link from 'next/link'
 //import { getData } from "@/lib/actions"
@@ -7,8 +7,6 @@ import Link from 'next/link'
 async function getMyData(): Promise<Admin[]> {
 
   let rows: never[] = [];
-  console.log("My rows 1");
-  console.log(rows);
 
   const api = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_admins', {
     method: 'GET',
@@ -52,8 +50,6 @@ async function getMyData(): Promise<Admin[]> {
       return rows;
 
     });
-
-
 
   return api;
 

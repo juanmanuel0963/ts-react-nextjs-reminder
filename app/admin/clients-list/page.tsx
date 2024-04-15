@@ -1,35 +1,62 @@
 "use client"
-import { Client, columns } from "./columns"
+import { Client, columns } from "@/lib/columns-client"
 import { DataTable } from "@/components/ui/data-table"
 import Link from 'next/link'
+//import { getData } from "@/lib/actions"
 
-async function getData(): Promise<Client[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "d8rf45t1",
-      admin: "Luz Coronado",
-      first_name: "Magda",
-      sur_name: "Duarte",
-      email: "magdaduarte@gmail.com",
-      country_code: "57",
-      phone_number: "3209939019"      
-    },
-    {
-      id: "er52fg1g",
-      admin: "Luz Coronado",
-      first_name: "Nelson",
-      sur_name: "González",
-      email: "nelsongonzalez@gmail.com",
-      country_code: "57",
-      phone_number: "3212408192"   
-    },
-    // ...
-  ]
-}
+async function getMyData(): Promise<Client[]> {
 
-export default async function ClientsList() {
-  const data = await getData()
+  let rows: never[] = [];
+
+  const api = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
+    method: 'GET',
+  })
+    .then((response) => response.json())
+    .then((data) => {
+
+      console.log("data");
+      console.log(data);
+
+      return data;
+      /*
+            // Fetch data from your API here.
+            const dataFake = [
+              {
+                ID: 1,
+                first_name: "Juan",
+                sur_name: "Diaz",
+                email: "juanmanuel0963@gmail.com",
+                country_code: "57",
+                phone_number: "3209939019"
+              },
+              {
+                ID: 2,
+                first_name: "Luz Mery",
+                sur_name: "Coronado",
+                email: "luzmerycoronado@gmail.com",
+                country_code: "57",
+                phone_number: "3212408192"
+              },
+            ];
+      
+            return dataFake;
+      */
+    })
+    .catch((error) => {
+      // Handle errors
+      alert("Error loggin in. " + error);
+      console.log(error);
+
+      return rows;
+
+    });
+
+  return api;
+
+};
+
+export default async function AdminsList() {
+  const data = await getMyData()
 
   return (
     <>
@@ -39,7 +66,7 @@ export default async function ClientsList() {
         <Link className="text-purple-500 font-semibold" href="../admin/clients">Create Client</Link>
         <DataTable columns={columns} data={data} />
       </div>
-      
+
     </>
   );
 };

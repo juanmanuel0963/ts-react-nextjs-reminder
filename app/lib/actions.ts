@@ -5,7 +5,7 @@ import { getIronSession } from "iron-session";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Admin, columns } from "./columns"
+import { Admin, columns } from "./columns-admin"
 import { DataTable } from "@/components/ui/data-table"
 
 
