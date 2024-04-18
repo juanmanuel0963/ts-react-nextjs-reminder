@@ -52,11 +52,12 @@ npx shadcn-ui@latest add select
 npx shadcn-ui@latest add calendar
 npx shadcn-ui@latest add popover
 npx shadcn-ui@latest add radio-group
+npx shadcn-ui@latest add combobox
 npm install @tanstack/react-table
 npm install aws-sdk aws4 @types/aws4
 npm install react-router-dom
 npm install iron-session
-
+npm install cmdk@0.2.1
 
 - Download from https://www.mogdb.io/en/downloads/psycopg2/all 
     psycopg2-5.0.0.2-cp312-cp312-manylinux_2_17_x86_64.linux_x86_64.whl

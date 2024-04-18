@@ -70,7 +70,6 @@ export default function Commitments() {
             <div className="flex-1 space-y-4">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)}>
-
                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
                             <FormField
                                 control={form.control}
