@@ -34,9 +34,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Client, columns } from "@/lib/columns-client"
+import React, { useEffect, useState } from 'react';
 
 const formSchema = z.object({
-
     client: z.string({
         required_error: "Client is required",
     }),
@@ -48,37 +48,33 @@ const formSchema = z.object({
     }),
 });
 
-function getMyData(): Promise<Client[]> {
-
-    let rows: never[] = [];
-
-    const api = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
-        method: 'GET',
-    })
-        .then((response) => response.json())
-        .then((data) => {
-
-            console.log("data: ", data);
-
-            return data;
-
-        })
-        .catch((error) => {
-            // Handle errors
-            alert("Error loggin in. " + error);
-            console.log(error);
-
-            return rows;
-
+const getClients = async (): Promise<Client[]> => {
+    try {
+        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
+            method: 'GET',
         });
-
-    return api;
-
+        const data = await response.json();
+        console.log("Data fetched: ", data);
+        return data;
+    } catch (error) {
+        console.error("Error fetching clients: ", error);
+        alert("Error fetching clients: " + error);
+        return [];
+    }
 };
 
 export default function Commitments() {
 
-    const datax = getMyData();
+    const [results, setResults] = useState<Client[]>([]);
+
+    useEffect(() => {
+        async function fetchClients() {
+            const clients = await getClients();
+            setResults(clients);
+        }
+
+        fetchClients();
+    }, []);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -98,34 +94,35 @@ export default function Commitments() {
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
-                            {/*
-                            <FormField
-                                control={form.control}
-                                name="client"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel htmlFor="client">Client</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select a client" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    <SelectLabel>Client</SelectLabel>
-                                                    {(datax).map((data) => (
-                                                        // Make sure to set a unique key for each SelectItem
-                                                        <SelectItem key={data.firstName} value={data.surName}>
-                                                            {data.firstName}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            */}
+                            {
+                                <FormField
+                                    control={form.control}
+                                    name="client"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel htmlFor="client">Client</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl id="client">
+                                                    <SelectTrigger className="w-[180px]">
+                                                        <SelectValue placeholder="Select a client" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectGroup>
+                                                        <SelectLabel>Clients</SelectLabel>
+                                                        {results.map(client => (
+                                                            <SelectItem key={client.ID} value={String(client.ID)}>
+                                                                {client.firstName + ' ' + client.surName}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            }
                             <FormField
                                 control={form.control}
                                 name="commitment"

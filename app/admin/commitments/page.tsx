@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { toast } from "@/components/ui/use-toast"
 import {
     Form,
     FormControl,
@@ -20,18 +19,25 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import {
-    SelectValue,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
     Select,
-} from "@/components/ui/select";
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-const FormSchema = z.object({
+import { Client, columns } from "@/lib/columns-client"
+import React, { useEffect, useState } from 'react';
+import { getSessionForClient } from "@/lib/actions"
+import { useRouter } from 'next/navigation';
+
+const formSchema = z.object({
     client: z.string({
         required_error: "Client is required",
     }),
@@ -42,27 +48,82 @@ const FormSchema = z.object({
         required_error: "Date is required",
     }),
 });
+
+const getClients = async (): Promise<Client[]> => {
+    try {
+        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log("Data fetched: ", data);
+        return data;
+    } catch (error) {
+        console.error("Error fetching clients: ", error);
+        alert("Error fetching clients: " + error);
+        return [];
+    }
+};
+
 export default function Commitments() {
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const router = useRouter();
+
+    const [results, setResults] = useState<Client[]>([]);
+
+    useEffect(() => {
+        async function fetchClients() {
+            const clients = await getClients();
+            setResults(clients);
+        }
+
+        fetchClients();
+    }, []);
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             commitment: "",
         },
     })
 
-    function handleSubmit(data: z.infer<typeof FormSchema>) {
-
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+        
         console.log('Form submitted', { data });
 
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        })
+        const session = await getSessionForClient()
+        const jsonSession = JSON.parse(session)
+    
+        let bodyData = {
+          clientId: Number(data.client),
+          commitment: data.commitment,
+          date: data.date
+        };        
+
+        console.log(JSON.stringify(bodyData));
+
+        const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments', {
+            method: 'POST',
+            body: JSON.stringify(bodyData),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+      
+              // Assuming the data returned includes an indication of successful creation
+              if (data.ID > 0) {
+                console.log(data.ID);
+                alert("Commitment created successfully.");
+                router.push(`./commitments-list/`);
+              } else {
+                // Handle errors
+                console.log(data);
+                alert("Commitment not created. " + data.error);
+              }
+            })
+            .catch((error) => {
+              // Handle errors
+              console.log(error);
+              alert("Commitment not created. " + error);            
+            });        
     };
 
     return (
@@ -70,7 +131,7 @@ export default function Commitments() {
             <h2 className="text-3xl font-bold tracking-tight my-4">Create Commitment</h2>
             <div className="flex-1 space-y-4">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
                             <FormField
                                 control={form.control}
@@ -86,8 +147,13 @@ export default function Commitments() {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="Magda Duarte">Magda Duarte</SelectItem>
-                                                    <SelectItem value="Jorge Briceño">Jorge Briceño</SelectItem>
+                                                    <SelectGroup>
+                                                        {results.map(client => (
+                                                            <SelectItem key={client.ID} value={String(client.ID)}>
+                                                                {client.firstName + ' ' + client.surName}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
