@@ -1,28 +1,18 @@
 "use client"
-
-import Link from "next/link"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Client, columns } from "@/lib/columns-client"
 import { z } from "zod"
-
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { toast } from "@/components/ui/use-toast"
+
+
+import React, { useEffect, useState } from 'react';
 
 const FormSchema = z.object({
   email: z
@@ -32,53 +22,62 @@ const FormSchema = z.object({
     .email(),
 })
 
-export default function Shadcn_Select() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  })
+const getClients = (): Client[] => {
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  let rows: never[] = [];
+
+  const api = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
+    method: 'GET',
+  })
+    .then((response) => response.json())
+    .then((data) => {
+
+      console.log("data: ", data);
+      return (data);
+
     })
-  }
+    .catch((error) => {
+      // Handle errors
+      alert("Error loggin in. " + error);
+      console.log(error);
+
+    }).finally(() => {
+
+    });
+
+  return rows;
+};
+
+export default function Shadcn_Select() {
+
+  const [results, setResults] = useState<Client[]>([])
+
+  useEffect(() => {
+    const  res = getClients();
+    console.log("results: ", res);
+    setResults(res);
+  }, []);
+
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="m@example.com">m@example.com</SelectItem>
-                  <SelectItem value="m@google.com">m@google.com</SelectItem>
-                  <SelectItem value="m@support.com">m@support.com</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                You can manage email addresses in your{" "}
-                <Link href="/examples/forms">email settings</Link>.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+    <div>
+      <Select>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a client" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectLabel>Clients</SelectLabel>
+            {/* Use map to loop over the dynamic list */}
+            {results.map((data) => (
+              // Make sure to set a unique key for each SelectItem
+              <SelectItem key={data.firstName} value={data.surName}>
+                {data.firstName}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   )
 }
