@@ -12,6 +12,8 @@ export type Client = {
   countryCode: string
   phoneNumber: string
   adminId: number
+  adminFirstName: string
+  adminSurName: string
 };
 
 export const columns: ColumnDef<Client>[] = [
@@ -43,4 +45,12 @@ export const columns: ColumnDef<Client>[] = [
     accessorKey: "AdminID",
     header: "Admin Id",
   },    
+  {
+    accessorKey: "adminFirstName",
+    header: "Admin First name",
+  },
+  {
+    accessorKey: "adminSurName",
+    header: "Admin Sur name",
+  },  
 ]
