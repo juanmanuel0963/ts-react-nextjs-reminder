@@ -1,31 +1,40 @@
 "use client"
-import { Commitment, columns } from "./columns"
+import { Commitment, columns } from "@/lib/columns-commitment"
 import { DataTable } from "@/components/ui/data-table"
 import Link from 'next/link'
+//import { getData } from "@/lib/actions"
 
-async function getData(): Promise<Commitment[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "d8rf45t1",
-      admin: "Luz Coronado",
-      client: "Magda Duarte",
-      commitment: "Póliza de auto URS573",
-      date: "01-Mar-2024"
-    },
-    {
-      id: "er52fg1g",
-      admin: "Luz Coronado",
-      client: "",
-      commitment: "Recibo de Gas apartamento",
-      date: "15-Mar-2024"
-    },
-    // ...
-  ]
-}
+async function getMyData(): Promise<Commitment[]> {
 
-export default async function EventsList() {
-  const data = await getData()
+  let rows: never[] = [];
+
+  const api = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?id=3', {
+    method: 'GET',
+  })
+    .then((response) => response.json())
+    .then((data) => {
+
+      console.log("data");
+      console.log(data);
+
+      return data;
+
+    })
+    .catch((error) => {
+      // Handle errors
+      alert("Error loggin in. " + error);
+      console.log(error);
+
+      return rows;
+
+    });
+
+  return api;
+
+};
+
+export default async function CommitmentsList() {
+  const data = await getMyData()
 
   return (
     <>
@@ -35,7 +44,7 @@ export default async function EventsList() {
         <Link className="text-purple-500 font-semibold" href="../admin/commitments">Create Commitment</Link>
         <DataTable columns={columns} data={data} />
       </div>
-      
+
     </>
   );
 };

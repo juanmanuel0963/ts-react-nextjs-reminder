@@ -18,29 +18,7 @@ async function getMyData(): Promise<Client[]> {
       console.log(data);
 
       return data;
-      /*
-            // Fetch data from your API here.
-            const dataFake = [
-              {
-                ID: 1,
-                first_name: "Juan",
-                sur_name: "Diaz",
-                email: "juanmanuel0963@gmail.com",
-                country_code: "57",
-                phone_number: "3209939019"
-              },
-              {
-                ID: 2,
-                first_name: "Luz Mery",
-                sur_name: "Coronado",
-                email: "luzmerycoronado@gmail.com",
-                country_code: "57",
-                phone_number: "3212408192"
-              },
-            ];
-      
-            return dataFake;
-      */
+
     })
     .catch((error) => {
       // Handle errors
