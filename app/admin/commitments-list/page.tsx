@@ -1,51 +1,42 @@
 "use client"
-import { Commitment, columns } from "@/lib/columns-commitment"
-import { DataTable } from "@/components/ui/data-table"
-import Link from 'next/link'
-//import { getData } from "@/lib/actions"
+import { Commitment, columns } from "@/lib/columns-commitment";
+import { DataTable } from "@/components/ui/data-table";
+import Link from 'next/link';
+import React from "react";
 
+// Async function to fetch data from the API
 async function getMyData(): Promise<Commitment[]> {
+  try {
+    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments');
+    const data = await response.json();
+    console.log("API data received:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert("Error fetching data. " + error);
+    return [];
+  }
+}
 
-  let rows: never[] = [];
+// Component to display commitments
+export default function CommitmentsList() {
+  const [data, setData] = React.useState<Commitment[]>([]);
 
-  const api = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?id=3', {
-    method: 'GET',
-  })
-    .then((response) => response.json())
-    .then((data) => {
-
-      console.log("data");
-      console.log(data);
-
-      return data;
-
-    })
-    .catch((error) => {
-      // Handle errors
-      alert("Error loggin in. " + error);
-      console.log(error);
-
-      return rows;
-
-    });
-
-  return api;
-
-};
-
-export default async function CommitmentsList() {
-  const data = await getMyData()
+  React.useEffect(() => {
+    getMyData().then(setData);
+  }, []);
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight my-4">Commitments directory</h2>
-
+      <h2 className="text-3xl font-bold tracking-tight my-4">Commitments Directory</h2>
       <div className="flex-1 space-y-4">
         <Link className="text-purple-500 font-semibold" href="../admin/commitments">Create Commitment</Link>
-        <DataTable columns={columns} data={data} />
+        {data.length > 0 ? (
+          <DataTable columns={columns} data={data} />
+        ) : (
+          <p>No results found.</p>
+        )}
       </div>
-
     </>
   );
-};
-
+}
