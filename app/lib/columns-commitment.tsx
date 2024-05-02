@@ -9,6 +9,10 @@ export type Commitment = {
   commitment: string
   date: Date
   clientId: number
+  clientFirstName: string
+  clientSurName: string
+  adminFirstName: string
+  adminSurName: string
 };
 
 export const columns: ColumnDef<Commitment>[] = [
@@ -27,5 +31,21 @@ export const columns: ColumnDef<Commitment>[] = [
   {
     accessorKey: "ClientID",
     header: "Client Id",
-  },     
+  },
+  {
+    accessorKey: "clientFirstName",
+    header: "Client First name",
+  },
+  {
+    accessorKey: "clientSurName",
+    header: "Client Sur name",
+  },
+  {
+    accessorKey: "adminFirstName",
+    header: "Admin First name",
+  },
+  {
+    accessorKey: "adminSurName",
+    header: "Admin Sur name",
+  },
 ]

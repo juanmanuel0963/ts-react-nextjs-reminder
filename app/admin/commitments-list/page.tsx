@@ -3,11 +3,17 @@ import { Commitment, columns } from "@/lib/columns-commitment";
 import { DataTable } from "@/components/ui/data-table";
 import Link from 'next/link';
 import React from "react";
+import { getSessionForClient } from "@/lib/actions"
 
 // Async function to fetch data from the API
 async function getMyData(): Promise<Commitment[]> {
   try {
-    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments');
+    const session = await getSessionForClient()
+    const jsonSession = JSON.parse(session)   
+    const adminId = jsonSession.adminId
+    console.log("adminId: ", adminId);
+
+    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?adminId=' + adminId);
     const data = await response.json();
     console.log("API data received:", data);
     return data;
