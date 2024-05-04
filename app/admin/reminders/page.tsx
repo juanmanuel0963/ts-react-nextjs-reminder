@@ -365,7 +365,7 @@ export default function Reminders() {
                                 render={() => (
                                     <FormItem>
                                         <div className="mb-4">
-                                            <FormLabel htmlFor="message">Message</FormLabel>
+                                            <FormLabel htmlFor="message">Channel</FormLabel>
                                             <FormDescription id="message">
 
                                             </FormDescription>
