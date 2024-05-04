@@ -1,5 +1,5 @@
 "use client"
-import { Commitment, columns } from "@/lib/columns-commitment";
+import { Commitment, columnsCommitment } from "@/lib/columns-commitment";
 import { DataTable } from "@/components/ui/data-table";
 import Link from 'next/link';
 import React from "react";
@@ -9,11 +9,14 @@ import { getSessionForClient } from "@/lib/actions"
 async function getMyData(): Promise<Commitment[]> {
   try {
     const session = await getSessionForClient()
-    const jsonSession = JSON.parse(session)   
+    const jsonSession = JSON.parse(session)
     const adminId = jsonSession.adminId
     console.log("adminId: ", adminId);
 
-    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?adminId=' + adminId);
+    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?adminId=' + adminId, {
+      method: 'GET',
+    });
+
     const data = await response.json();
     console.log("API data received:", data);
     return data;
@@ -38,7 +41,7 @@ export default function CommitmentsList() {
       <div className="flex-1 space-y-4">
         <Link className="text-purple-500 font-semibold" href="../admin/commitments">Create Commitment</Link>
         {data.length > 0 ? (
-          <DataTable columns={columns} data={data} />
+          <DataTable columns={columnsCommitment} data={data} />
         ) : (
           <p>No results found.</p>
         )}

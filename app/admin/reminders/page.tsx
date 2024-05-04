@@ -17,12 +17,20 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import {
-    SelectValue,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
     Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
+import { Client, columnsClient } from "@/lib/columns-client"
+import { Commitment, columnsCommitment } from "@/lib/columns-commitment"
+import React, { useEffect, useState } from 'react';
+import { getSessionForClient } from "@/lib/actions"
+import { useRouter } from 'next/navigation';
+
 const message_recipients = [
     {
         id: "client",
@@ -76,7 +84,71 @@ const formSchema = z
         }),
     });
 
+// Async function to fetch data from the API
+async function getClients(): Promise<Client[]> {
+    try {
+        const session = await getSessionForClient()
+        const jsonSession = JSON.parse(session)
+        const adminId = jsonSession.adminId
+        console.log("adminId: ", adminId);
+
+        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients?adminId=' + adminId, {
+            method: 'GET',
+        });
+
+        const data = await response.json();
+        console.log("API data received:", data);
+        return data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Error fetching data. " + error);
+        return [];
+    }
+}
+
+// Async function to fetch data from the API
+async function getCommitments(): Promise<Commitment[]> {
+    try {
+        const session = await getSessionForClient()
+        const jsonSession = JSON.parse(session)
+        const adminId = jsonSession.adminId
+        console.log("adminId: ", adminId);
+
+        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?adminId=' + adminId, {
+            method: 'GET',
+        });
+
+        const data = await response.json();
+        console.log("API data received:", data);
+        return data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Error fetching data. " + error);
+        return [];
+    }
+}
+
 export default function Reminders() {
+
+    const router = useRouter();
+
+    const [resultsClients, setResultsClients] = useState<Client[]>([]);
+    const [resultsCommitments, setResultsCommitments] = useState<Commitment[]>([]);
+
+    useEffect(() => {
+        async function fetchClients() {
+            const clients = await getClients();
+            setResultsClients(clients);
+        }
+        fetchClients();
+
+        async function fetchCommitments() {
+            const commitments = await getCommitments();
+            setResultsCommitments(commitments);
+        }
+        fetchCommitments();
+    }, []);
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -89,7 +161,7 @@ export default function Reminders() {
     });
 
 
-    const handleSubmit = (data: z.infer<typeof formSchema>) => {
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
 
         console.log('Form submitted', { data });
 
@@ -108,7 +180,7 @@ export default function Reminders() {
             <h2 className="text-3xl font-bold tracking-tight my-4">Create Reminder</h2>
             <div className="flex-1 space-y-4">
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)}>
+                    <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
                             <FormField
                                 control={form.control}
@@ -117,15 +189,20 @@ export default function Reminders() {
                                     return (
                                         <FormItem>
                                             <FormLabel htmlFor="client">Client</FormLabel>
-                                            <Select onValueChange={field.onChange}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl id="client">
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a Client" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="Magda Duarte">Magda Duarte</SelectItem>
-                                                    <SelectItem value="Jorge Briceño">Jorge Briceño</SelectItem>
+                                                    <SelectGroup>
+                                                        {resultsClients.map(client => (
+                                                            <SelectItem key={client.ID} value={String(client.ID)}>
+                                                                {client.firstName + ' ' + client.surName}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />
@@ -140,15 +217,20 @@ export default function Reminders() {
                                     return (
                                         <FormItem>
                                             <FormLabel htmlFor="commitment">Commitment</FormLabel>
-                                            <Select onValueChange={field.onChange}>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl id="commitment">
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a Commitment" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="Póliza Auto URS">Póliza Auto URS</SelectItem>
-                                                    <SelectItem value="Póliza Salud">Póliza Salud</SelectItem>
+                                                    <SelectGroup>
+                                                        {resultsCommitments.map(commitment => (
+                                                            <SelectItem key={commitment.ID} value={String(commitment.ID)}>
+                                                                {commitment.commitment}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectGroup>
                                                 </SelectContent>
                                             </Select>
                                             <FormMessage />

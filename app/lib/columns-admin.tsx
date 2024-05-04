@@ -15,7 +15,7 @@ export type Admin = {
   isAdmin: string
 };
 
-export const columns: ColumnDef<Admin>[] = [
+export const columnsAdmin: ColumnDef<Admin>[] = [
   {
     accessorKey: "ID",
     header: "ID",

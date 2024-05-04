@@ -16,7 +16,7 @@ export type Client = {
   adminSurName: string
 };
 
-export const columns: ColumnDef<Client>[] = [
+export const columnsClient: ColumnDef<Client>[] = [
   {
     accessorKey: "ID",
     header: "ID",

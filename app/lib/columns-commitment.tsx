@@ -15,7 +15,7 @@ export type Commitment = {
   adminSurName: string
 };
 
-export const columns: ColumnDef<Commitment>[] = [
+export const columnsCommitment: ColumnDef<Commitment>[] = [
   {
     accessorKey: "ID",
     header: "ID",

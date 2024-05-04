@@ -48,7 +48,7 @@ const formSchema = z.object({
         required_error: "Date is required",
     }),
 });
-
+/*
 const getClients = async (): Promise<Client[]> => {
     try {
         const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
@@ -63,6 +63,28 @@ const getClients = async (): Promise<Client[]> => {
         return [];
     }
 };
+*/
+// Async function to fetch data from the API
+async function getClients(): Promise<Client[]> {
+    try {
+        const session = await getSessionForClient()
+        const jsonSession = JSON.parse(session)
+        const adminId = jsonSession.adminId
+        console.log("adminId: ", adminId);
+
+        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients?adminId=' + adminId, {
+            method: 'GET',
+        });
+
+        const data = await response.json();
+        console.log("API data received:", data);
+        return data;
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Error fetching data. " + error);
+        return [];
+    }
+}
 
 export default function Commitments() {
 
@@ -75,7 +97,6 @@ export default function Commitments() {
             const clients = await getClients();
             setResults(clients);
         }
-
         fetchClients();
     }, []);
 
@@ -87,43 +108,43 @@ export default function Commitments() {
     })
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
-        
+
         console.log('Form submitted', { data });
 
         const session = await getSessionForClient()
         const jsonSession = JSON.parse(session)
-    
+
         let bodyData = {
-          clientId: Number(data.client),
-          commitment: data.commitment,
-          date: data.date
-        };        
+            clientId: Number(data.client),
+            commitment: data.commitment,
+            date: data.date
+        };
 
         console.log(JSON.stringify(bodyData));
 
         const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments', {
             method: 'POST',
             body: JSON.stringify(bodyData),
-          })
+        })
             .then((response) => response.json())
             .then((data) => {
-      
-              // Assuming the data returned includes an indication of successful creation
-              if (data.ID > 0) {
-                console.log(data.ID);
-                alert("Commitment created successfully.");
-                router.push(`./commitments-list/`);
-              } else {
-                // Handle errors
-                console.log(data);
-                alert("Commitment not created. " + data.error);
-              }
+
+                // Assuming the data returned includes an indication of successful creation
+                if (data.ID > 0) {
+                    console.log(data.ID);
+                    alert("Commitment created successfully.");
+                    router.push(`./commitments-list/`);
+                } else {
+                    // Handle errors
+                    console.log(data);
+                    alert("Commitment not created. " + data.error);
+                }
             })
             .catch((error) => {
-              // Handle errors
-              console.log(error);
-              alert("Commitment not created. " + error);            
-            });        
+                // Handle errors
+                console.log(error);
+                alert("Commitment not created. " + error);
+            });
     };
 
     return (
