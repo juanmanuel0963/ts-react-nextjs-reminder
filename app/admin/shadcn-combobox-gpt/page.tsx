@@ -1,5 +1,5 @@
 "use client"
-import { Client, columns } from "@/lib/columns-client"
+import { Client, columnsClient } from "@/lib/columns-client"
 import Link from 'next/link'
 import * as React from "react"
 

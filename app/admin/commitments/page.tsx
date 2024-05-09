@@ -32,7 +32,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Client, columns } from "@/lib/columns-client"
+import { Client, columnsClient } from "@/lib/columns-client"
 import React, { useEffect, useState } from 'react';
 import { getSessionForClient } from "@/lib/actions"
 import { useRouter } from 'next/navigation';

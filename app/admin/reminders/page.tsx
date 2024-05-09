@@ -41,7 +41,7 @@ const message_recipients = [
         label: "Admin",
     },
 ] as const;
-const message_channel = [
+const message_channels = [
     {
         id: "sms",
         label: "SMS",
@@ -79,7 +79,7 @@ const formSchema = z
         message_recipients: z.array(z.string()).refine((value) => value.some((item) => item), {
             message: "Select the recipients of the reminder",
         }),
-        message_channel: z.array(z.string()).refine((value) => value.some((item) => item), {
+        message_channels: z.array(z.string()).refine((value) => value.some((item) => item), {
             message: "Select the channel for sending the reminder",
         }),
     });
@@ -156,24 +156,56 @@ export default function Reminders() {
             message: "",
             days_before: "",
             message_recipients: [],
-            message_channel: [],
+            message_channels: [],
         },
     });
 
 
-    const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
-        console.log('Form submitted', { data });
-
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
+        const session = await getSessionForClient()
+        const jsonSession = JSON.parse(session)
+    
+        let bodyData = {
+          clientId: Number(data.client),
+          commitmentId: Number(data.commitment),
+          days_before: Number(data.days_before),
+          frequency: data.frequency,
+          title: data.title,
+          message: data.message,
+          channels: String(data.message_channels),
+          recipients: String(data.message_recipients)
+        };
+    
+        console.log('Current Admin Id: ', jsonSession.adminId);
+        console.log('Is Admin logged in: ', jsonSession.isLoggedIn);
+        console.log('Form submitted: ', { data });
+        console.log(JSON.stringify(bodyData));
+    
+        const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders', {
+          method: 'POST',
+          body: JSON.stringify(bodyData),
         })
-    };
+          .then((response) => response.json())
+          .then((data) => {
+    
+            // Assuming the data returned includes an indication of successful creation
+            if (data.ID > 0) {
+              console.log(data.ID);
+              alert("Reminder created successfully.");
+              router.push(`./reminders-list/`);
+            } else {
+              // Handle errors
+              console.log(data);
+              alert("Reminder not created. " + data.error);
+            }
+          })
+          .catch((error) => {
+            // Handle errors
+            alert("Reminder not created. " + error);
+            console.log(error);
+          });
+      };
 
     return (
         <main >
@@ -361,7 +393,7 @@ export default function Reminders() {
                             />
                             <FormField
                                 control={form.control}
-                                name="message_channel"
+                                name="message_channels"
                                 render={() => (
                                     <FormItem>
                                         <div className="mb-4">
@@ -370,11 +402,11 @@ export default function Reminders() {
 
                                             </FormDescription>
                                         </div>
-                                        {message_channel.map((item) => (
+                                        {message_channels.map((item) => (
                                             <FormField
                                                 key={item.id}
                                                 control={form.control}
-                                                name="message_channel"
+                                                name="message_channels"
                                                 render={({ field }) => {
                                                     return (
                                                         <FormItem

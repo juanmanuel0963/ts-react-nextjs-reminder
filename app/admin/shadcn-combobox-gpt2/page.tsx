@@ -33,7 +33,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Client, columns } from "@/lib/columns-client"
+import { Client, columnsClient } from "@/lib/columns-client"
 import React, { useEffect, useState } from 'react';
 
 const formSchema = z.object({
