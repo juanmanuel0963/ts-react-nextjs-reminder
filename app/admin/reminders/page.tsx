@@ -160,52 +160,87 @@ export default function Reminders() {
         },
     });
 
-
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
 
         const session = await getSessionForClient()
         const jsonSession = JSON.parse(session)
-    
-        let bodyData = {
-          clientId: Number(data.client),
-          commitmentId: Number(data.commitment),
-          days_before: Number(data.days_before),
-          frequency: data.frequency,
-          title: data.title,
-          message: data.message,
-          channels: String(data.message_channels),
-          recipients: String(data.message_recipients)
-        };
-    
+        console.log('Form submitted: ', { data });
         console.log('Current Admin Id: ', jsonSession.adminId);
         console.log('Is Admin logged in: ', jsonSession.isLoggedIn);
-        console.log('Form submitted: ', { data });
-        console.log(JSON.stringify(bodyData));
-    
-        const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders', {
-          method: 'POST',
-          body: JSON.stringify(bodyData),
+
+        let bodyDataScheduler = {
+            id: "100",
+            name: "Juan Diaz",
+            email: "juanmanuel0963@gmail.com",
+            phone: "+573209939019",
+            message: "Recordatorio. La fecha límite de pago de su Póliza de Auto SURA es el día 18 de cada mes. Recuerde realizar su pago a tiempo.",
+            reminder_day: "19",
+            reminder_hour: "16",
+            reminder_minute: "17"
+        };
+
+        console.log(JSON.stringify(bodyDataScheduler));
+
+        const resScheduler = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_scheduler', {
+            method: 'POST',
+            body: JSON.stringify(bodyDataScheduler),
         })
-          .then((response) => response.json())
-          .then((data) => {
-    
-            // Assuming the data returned includes an indication of successful creation
-            if (data.ID > 0) {
-              console.log(data.ID);
-              alert("Reminder created successfully.");
-              router.push(`./reminders-list/`);
-            } else {
-              // Handle errors
-              console.log(data);
-              alert("Reminder not created. " + data.error);
-            }
-          })
-          .catch((error) => {
-            // Handle errors
-            alert("Reminder not created. " + error);
-            console.log(error);
-          });
-      };
+            .then((response) => response.json())
+            .then((data) => {
+
+                // Assuming the data returned includes an indication of successful creation
+                if (data) {
+                    console.log("Scheduler data: ");
+                    console.log(data);
+                } else {
+                    // Handle errors
+                    console.log(data);
+                    alert("Scheduler not created. " + data.error);
+                }
+            })
+            .catch((error) => {
+                // Handle errors
+                alert("Scheduler not created. " + error);
+                console.log(error);
+            });
+
+        let bodyDataReminder = {
+            clientId: Number(data.client),
+            commitmentId: Number(data.commitment),
+            days_before: Number(data.days_before),
+            frequency: data.frequency,
+            title: data.title,
+            message: data.message,
+            channels: String(data.message_channels),
+            recipients: String(data.message_recipients)
+        };
+
+        console.log(JSON.stringify(bodyDataReminder));
+
+        const resReminder = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders', {
+            method: 'POST',
+            body: JSON.stringify(bodyDataReminder),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+
+                // Assuming the data returned includes an indication of successful creation
+                if (data.ID > 0) {
+                    console.log(data.ID);
+                    alert("Reminder created successfully.");
+                    router.push(`./reminders-list/`);
+                } else {
+                    // Handle errors
+                    console.log(data);
+                    alert("Reminder not created. " + data.error);
+                }
+            })
+            .catch((error) => {
+                // Handle errors
+                alert("Reminder not created. " + error);
+                console.log(error);
+            });
+    };
 
     return (
         <main >
