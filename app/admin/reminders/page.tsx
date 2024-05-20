@@ -160,86 +160,156 @@ export default function Reminders() {
         },
     });
 
-    const onSubmit = async (data: z.infer<typeof formSchema>) => {
+
+
+    const onSubmit = async (formData: z.infer<typeof formSchema>) => {
 
         const session = await getSessionForClient()
         const jsonSession = JSON.parse(session)
-        console.log('Form submitted: ', { data });
-        console.log('Current Admin Id: ', jsonSession.adminId);
+        const adminId = jsonSession.adminId
+        const commitmentId = Number(formData.commitment)
+
+        console.log('Form submitted: ', { formData });
+        console.log('Current Admin Id: ', adminId);
         console.log('Is Admin logged in: ', jsonSession.isLoggedIn);
+        console.log('Current Commitment Id: ', commitmentId);
 
-        let bodyDataScheduler = {
-            id: "100",
-            name: "Juan Diaz",
-            email: "juanmanuel0963@gmail.com",
-            phone: "+573209939019",
-            message: "Recordatorio. La fecha límite de pago de su Póliza de Auto SURA es el día 18 de cada mes. Recuerde realizar su pago a tiempo.",
-            reminder_day: "19",
-            reminder_hour: "16",
-            reminder_minute: "17"
-        };
+        //---------------------------------------rmdx_commitments------------------------------
 
-        console.log(JSON.stringify(bodyDataScheduler));
+        console.log("-------rmdx_commitments-------");
 
-        const resScheduler = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_scheduler', {
-            method: 'POST',
-            body: JSON.stringify(bodyDataScheduler),
+        const responseCommitments = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_commitments?adminId=' + adminId + '&commitmentId=' + commitmentId, {
+            method: 'GET',
         })
             .then((response) => response.json())
-            .then((data) => {
+            .then((responseDataCommitments) => {
 
                 // Assuming the data returned includes an indication of successful creation
-                if (data) {
-                    console.log("Scheduler data: ");
-                    console.log(data);
+                if (responseDataCommitments) {
+                    console.log("Commitment data: ");
+                    console.log(responseDataCommitments[0]);
+                    console.log(responseDataCommitments[0].commitment);
+                    console.log(responseDataCommitments[0].ClientID);
+                    console.log(responseDataCommitments[0].date);
+
+                    // Extract the date string
+                    const dateString = responseDataCommitments[0].date;
+
+                    // Split the date string to get the year, month, and day
+                    const [year, month, day] = dateString.split('T')[0].split('-');
+
+                    // Log the extracted values
+                    console.log(`Year: ${year}, Month: ${month}, Day: ${day}`);
+
+                    // Convert day to a number
+                    const dayNumber = parseInt(day, 10); // or use Number(day)
+
+                    console.log(`Day: ${dayNumber}`);
+
+                    const daysBefore = Number(formData.days_before);
+
+                    console.log("daysBefore: " + daysBefore);
+
+                    console.log("Reminder day: " + (dayNumber - daysBefore));
+
+                    //---------------------------------------rmdx_scheduler------------------------------
+
+                    console.log("-------rmdx_scheduler-------");
+
+                    let bodyDataScheduler = {
+                        id: "100",
+                        name: "Juan Diaz",
+                        email: "juanmanuel0963@gmail.com",
+                        phone: "+573209939019",
+                        message: "Recordatorio. La fecha límite de pago de su Póliza de Auto SURA es el día 18 de cada mes. Recuerde realizar su pago a tiempo.",
+                        reminder_day: `${(dayNumber - daysBefore)}`,
+                        reminder_hour: "9",
+                        reminder_minute: "00"
+                    };
+
+                    console.log(JSON.stringify(bodyDataScheduler));
+
+                    const responseScheduler = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_scheduler', {
+                        method: 'POST',
+                        body: JSON.stringify(bodyDataScheduler),
+                    })
+                        .then((response) => response.json())
+                        .then((responseDataScheduler) => {
+
+                            // Assuming the data returned includes an indication of successful creation
+                            if (responseDataScheduler) {
+                                console.log("Scheduler data: ");
+                                console.log(responseDataScheduler);
+
+                                //---------------------------------------rmdx_reminders------------------------------
+
+                                console.log("-------rmdx_reminders-------");
+
+                                let bodyDataReminder = {
+                                    clientId: Number(formData.client),
+                                    commitmentId: Number(formData.commitment),
+                                    days_before: Number(formData.days_before),
+                                    frequency: formData.frequency,
+                                    title: formData.title,
+                                    message: formData.message,
+                                    channels: String(formData.message_channels),
+                                    recipients: String(formData.message_recipients)
+                                };
+
+                                console.log(JSON.stringify(bodyDataReminder));
+
+                                const responseReminder = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders', {
+                                    method: 'POST',
+                                    body: JSON.stringify(bodyDataReminder),
+                                })
+                                    .then((response) => response.json())
+                                    .then((responseDataReminders) => {
+
+                                        // Assuming the data returned includes an indication of successful creation
+                                        if (responseDataReminders.ID > 0) {
+                                            console.log(responseDataReminders.ID);
+                                            alert("Reminder created successfully.");
+                                            //router.push(`./reminders-list/`);
+                                        } else {
+                                            // Handle errors
+                                            console.log(responseDataReminders);
+                                            alert("Reminder not created. " + responseDataReminders.error);
+                                        }
+                                    })
+                                    .catch((error) => {
+                                        // Handle errors
+                                        alert("Reminder not created. " + error);
+                                        console.log(error);
+                                    });
+
+                                //end ---------------------------------------rmdx_reminders------------------------------
+
+                            } else {
+                                // Handle errors
+                                console.log(responseDataScheduler);
+                                alert("Scheduler not created. " + responseDataScheduler.error);
+                            }
+                        })
+                        .catch((error) => {
+                            // Handle errors
+                            alert("Scheduler not created. " + error);
+                            console.log(error);
+                        });
+
+                    //end ---------------------------------------rmdx_scheduler------------------------------
+
                 } else {
                     // Handle errors
-                    console.log(data);
-                    alert("Scheduler not created. " + data.error);
+                    console.log(responseDataCommitments);
+                    alert("Commitment does not exist. " + responseDataCommitments.error);
                 }
             })
             .catch((error) => {
                 // Handle errors
-                alert("Scheduler not created. " + error);
+                alert("Commitment does not exist. " + error);
                 console.log(error);
             });
-
-        let bodyDataReminder = {
-            clientId: Number(data.client),
-            commitmentId: Number(data.commitment),
-            days_before: Number(data.days_before),
-            frequency: data.frequency,
-            title: data.title,
-            message: data.message,
-            channels: String(data.message_channels),
-            recipients: String(data.message_recipients)
-        };
-
-        console.log(JSON.stringify(bodyDataReminder));
-
-        const resReminder = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders', {
-            method: 'POST',
-            body: JSON.stringify(bodyDataReminder),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-
-                // Assuming the data returned includes an indication of successful creation
-                if (data.ID > 0) {
-                    console.log(data.ID);
-                    alert("Reminder created successfully.");
-                    router.push(`./reminders-list/`);
-                } else {
-                    // Handle errors
-                    console.log(data);
-                    alert("Reminder not created. " + data.error);
-                }
-            })
-            .catch((error) => {
-                // Handle errors
-                alert("Reminder not created. " + error);
-                console.log(error);
-            });
+        //end ---------------------------------------rmdx_commitments------------------------------
     };
 
     return (
