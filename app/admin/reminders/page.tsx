@@ -160,7 +160,35 @@ export default function Reminders() {
         },
     });
 
+    // Helper function to get the number of days in a month
+    const getDaysInMonth = (year: number, month: number): number => {
+        return new Date(year, month, 0).getDate();
+    };
 
+    /**
+ * Function to calculate a new date by subtracting a number of days from the given date.
+ * @param year - The year of the initial date.
+ * @param month - The month of the initial date (1-12).
+ * @param day - The day of the initial date.
+ * @param reminderDays - The number of days to count back from the initial date.
+ * @returns The new date after subtracting the reminderDays.
+ */
+    const getReminderDay = (year: number, month: number, day: number, reminderDays: number): { year: number, month: number, day: number } => {
+        let newDay = day - reminderDays;
+        let newMonth = month;
+        let newYear = year;
+
+        while (newDay <= 0) {
+            newMonth -= 1;
+            if (newMonth <= 0) {
+                newMonth = 12;
+                newYear -= 1;
+            }
+            newDay += getDaysInMonth(newYear, newMonth);
+        }
+
+        return { year: newYear, month: newMonth, day: newDay };
+    };
 
     const onSubmit = async (formData: z.infer<typeof formSchema>) => {
 
@@ -201,28 +229,42 @@ export default function Reminders() {
                     // Log the extracted values
                     console.log(`Year: ${year}, Month: ${month}, Day: ${day}`);
 
+                    // Convert year to a number
+                    const yearNumber = parseInt(year, 10); // or use Number(year)
+                    console.log(`Year: ${yearNumber}`);
+
                     // Convert day to a number
                     const dayNumber = parseInt(day, 10); // or use Number(day)
-
                     console.log(`Day: ${dayNumber}`);
 
-                    const daysBefore = Number(formData.days_before);
+                    // Convert month to a number
+                    const monthNumber = parseInt(month, 10); // or use Number(month)
+                    console.log(`Month: ${monthNumber}`);
 
+                    // Call the getDaysInMonth function
+                    const daysInMonth = getDaysInMonth(yearNumber, monthNumber);
+                    console.log(`Days in Month: ${daysInMonth}`);
+
+                    const daysBefore = Number(formData.days_before);
                     console.log("daysBefore: " + daysBefore);
 
-                    console.log("Reminder day: " + (dayNumber - daysBefore));
+                    // Get the new reminder day
+                    const reminderDate = getReminderDay(yearNumber, monthNumber, dayNumber, daysBefore);
+                    console.log(`Reminder Date: Year: ${reminderDate.year}, Month: ${reminderDate.month}, Day: ${reminderDate.day}`);
+
 
                     //---------------------------------------rmdx_scheduler------------------------------
 
                     console.log("-------rmdx_scheduler-------");
 
                     let bodyDataScheduler = {
-                        id: "100",
-                        name: "Juan Diaz",
-                        email: "juanmanuel0963@gmail.com",
-                        phone: "+573209939019",
-                        message: "Recordatorio. La fecha límite de pago de su Póliza de Auto SURA es el día 18 de cada mes. Recuerde realizar su pago a tiempo.",
-                        reminder_day: `${(dayNumber - daysBefore)}`,
+                        id: String(formData.commitment),
+                        name: responseDataCommitments[0].clientFirstName + responseDataCommitments[0].clientSurName,
+                        email: responseDataCommitments[0].clientEmail,
+                        phone: "+" + responseDataCommitments[0].clientCountryCode + responseDataCommitments[0].clientPhoneNumber,
+                        title: formData.title,
+                        message: formData.message,
+                        reminder_day: `${(reminderDate.day)}`,
                         reminder_hour: "9",
                         reminder_minute: "00"
                     };
@@ -253,7 +295,8 @@ export default function Reminders() {
                                     title: formData.title,
                                     message: formData.message,
                                     channels: String(formData.message_channels),
-                                    recipients: String(formData.message_recipients)
+                                    recipients: String(formData.message_recipients),
+                                    schedule_id_client: responseDataScheduler.schedule_id
                                 };
 
                                 console.log(JSON.stringify(bodyDataReminder));
