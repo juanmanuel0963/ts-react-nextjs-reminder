@@ -351,10 +351,12 @@ export default function Reminders() {
 
             // Assuming the data returned includes an indication of successful creation
             if (responseDataReminders) {
-                console.log("Reminder created: ");
+                console.log("Reminder created successfully.");
                 console.log(responseDataReminders);
-            };
 
+                alert("Reminder created successfully.");
+                router.push(`./reminders-list/`);
+            };
 
         } catch (error) {
             // Handle errors

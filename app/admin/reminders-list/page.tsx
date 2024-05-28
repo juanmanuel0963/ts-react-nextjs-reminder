@@ -1,73 +1,51 @@
 "use client"
-import { Reminder, columns } from "./columns"
-import { DataTable } from "@/components/ui/data-table"
-import Link from 'next/link'
+import { Reminder, columnsReminder } from "@/lib/columns-reminder";
+import { DataTable } from "@/components/ui/data-table";
+import Link from 'next/link';
+import React from "react";
+import { getSessionForClient } from "@/lib/actions"
 
-async function getData(): Promise<Reminder[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      id: "d8rf45t1",
-      client: "Magda Duarte",
-      commitment: "Póliza de auto URS573",
-      title: "Recordatorio Póliza Auto URS573",
-      message: "El vencimiento del pago de su póliza es el día de hoy.",
-      days_before: "0",
-      frequency: "Monthly"      
-    },
-    {
-      id: "45df3485",
-      client: "Magda Duarte",
-      commitment: "Póliza de auto URS573",
-      title: "Recordatorio Póliza Auto URS573",
-      message: "El vencimiento del pago de su póliza es el día de mañana.",
-      days_before: "1",
-      frequency: "Monthly"            
-    },    
-    {
-      id: "4rt56y7u",
-      client: "Magda Duarte",
-      commitment: "Póliza de auto URS573",
-      title: "Recordatorio Póliza Auto URS573",
-      message: "El vencimiento del pago de su póliza es el próximo día 30 de mes.",
-      days_before: "5",
-      frequency: "Monthly"            
-    },        
-    {
-      id: "4rt56y7u",
-      client: "Magda Duarte",
-      commitment: "Póliza de auto URS573",
-      title: "Renovación Póliza Auto Magda Duarte",
-      message: "La Renovación de la póliza de auto URS573 vence el próximo día 30 de mes.",
-      days_before: "30",
-      frequency: "Yearly"            
-    },          
-    {
-      id: "er52fg1g",
-      client: "",
-      commitment: "Recibo de Gas apartamento",
-      title: "Recordatorio Pagar recibo gas apartamento",
-      message: "El vencimiento del recibo de gas es hoy.",
-      days_before: "0",
-      frequency: "Monthly"            
-    },    
-    // ...
-  ]
+// Async function to fetch data from the API
+async function getMyData(): Promise<Reminder[]> {
+  try {
+    const session = await getSessionForClient()
+    const jsonSession = JSON.parse(session)
+    const adminId = jsonSession.adminId
+    console.log("adminId: ", adminId);
+
+    const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders?adminId=' + adminId, {
+      method: 'GET',
+    });
+
+    const data = await response.json();
+    console.log("API data received:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert("Error fetching data. " + error);
+    return [];
+  }
 }
 
-export default async function RemindersList() {
-  const data = await getData()
+// Component to display reminders
+export default function RemindersList() {
+  const [data, setData] = React.useState<Reminder[]>([]);
+
+  React.useEffect(() => {
+    getMyData().then(setData);
+  }, []);
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight my-4">Reminders directory</h2>
-
+      <h2 className="text-3xl font-bold tracking-tight my-4">Reminders Directory</h2>
       <div className="flex-1 space-y-4">
         <Link className="text-purple-500 font-semibold" href="../admin/reminders">Create Reminder</Link>
-        <DataTable columns={columns} data={data} />
+        {data.length > 0 ? (
+          <DataTable columns={columnsReminder} data={data} />
+        ) : (
+          <p>No results found.</p>
+        )}
       </div>
-      
     </>
   );
-};
-
+}
