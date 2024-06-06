@@ -1,6 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import Link from 'next/link';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -14,10 +15,8 @@ export type Reminder = {
   channels: string
   clientSchedule: string
   adminSchedule: string
-  clientFirstName: string
-  clientSurName: string
-  adminFirstName: string
-  adminSurName: string  
+  clientName: string
+  adminName: string
 };
 
 export const columnsReminder: ColumnDef<Reminder>[] = [
@@ -56,21 +55,24 @@ export const columnsReminder: ColumnDef<Reminder>[] = [
   {
     accessorKey: "adminSchedule",
     header: "Admin Schedule",
-  },  
-  {
-    accessorKey: "clientFirstName",
-    header: "Client First name",
   },
   {
-    accessorKey: "clientSurName",
-    header: "Client Sur name",
+    accessorKey: "clientName",
+    header: "Client name",
   },
   {
-    accessorKey: "adminFirstName",
-    header: "Admin First name",
+    accessorKey: "adminName",
+    header: "Admin name",
   },
   {
-    accessorKey: "adminSurName",
-    header: "Admin Sur name",
-  },  
+    accessorKey: 'ID', // assuming 'id' is the unique identifier for each reminder
+    header: 'Actions',
+    cell: ({ row }) => (
+      <div className="flex space-x-2">
+        <Link href={`/admin/reminders?id=${row.getValue("ID")}`}>
+          View
+        </Link>
+      </div>
+    ),
+  },
 ]

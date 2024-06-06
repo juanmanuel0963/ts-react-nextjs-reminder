@@ -48,22 +48,7 @@ const formSchema = z.object({
         required_error: "Date is required",
     }),
 });
-/*
-const getClients = async (): Promise<Client[]> => {
-    try {
-        const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
-            method: 'GET',
-        });
-        const data = await response.json();
-        console.log("Data fetched: ", data);
-        return data;
-    } catch (error) {
-        console.error("Error fetching clients: ", error);
-        alert("Error fetching clients: " + error);
-        return [];
-    }
-};
-*/
+
 // Async function to fetch data from the API
 async function getClients(): Promise<Client[]> {
     try {

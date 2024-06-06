@@ -1,6 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import Link from 'next/link';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -9,10 +10,8 @@ export type Commitment = {
   commitment: string
   date: Date
   clientId: number
-  clientFirstName: string
-  clientSurName: string
-  adminFirstName: string
-  adminSurName: string
+  clientName: string
+  adminName: string
 };
 
 export const columnsCommitment: ColumnDef<Commitment>[] = [
@@ -29,23 +28,20 @@ export const columnsCommitment: ColumnDef<Commitment>[] = [
     header: "Date",
   },
   {
-    accessorKey: "ClientID",
-    header: "Client Id",
+    accessorKey: "clientName",
+    header: "Client name",
   },
   {
-    accessorKey: "clientFirstName",
-    header: "Client First name",
+    accessorKey: "adminName",
+    header: "Admin name",
   },
   {
-    accessorKey: "clientSurName",
-    header: "Client Sur name",
-  },
-  {
-    accessorKey: "adminFirstName",
-    header: "Admin First name",
-  },
-  {
-    accessorKey: "adminSurName",
-    header: "Admin Sur name",
-  },
+    accessorKey: 'ID', // assuming 'id' is the unique identifier for each reminder
+    header: 'Actions',    
+    cell: ({ row }) => (
+      <Link href={`/admin/commitments?id=${row.getValue("ID")}`}>
+        View
+      </Link>
+    ),
+  },  
 ]
