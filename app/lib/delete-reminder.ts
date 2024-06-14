@@ -2,6 +2,9 @@
 
 export async function deleteReminder(id: number): Promise<void> {
   try {
+    console.log("---------deleteReminder---------");
+    console.log("id: ", id);
+
     const response = await fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_reminders?id=' + id, {
       method: 'DELETE',
       headers: {
@@ -11,16 +14,13 @@ export async function deleteReminder(id: number): Promise<void> {
       }
     });
 
-    console.log("DELETE fetch end");
-    console.log("Response:", response);
-    console.log("Response.ok:", response.ok);
-
     if (!response.ok) {
-      throw new Error('Failed to delete reminder');
+      throw new Error('Failed to delete Reminder');
     }
 
-  } catch (error) {
-    console.error("Error deleting your reminder:", error);
+    console.log("Reminder deleted successfully");
 
+  } catch (error) {
+    console.error("Error deleting your Reminder:", error);
   }
 }

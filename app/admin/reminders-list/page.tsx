@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React from "react";
 import { getSessionForClient } from "@/lib/actions";
 import { deleteReminder } from "@/lib/delete-reminder";
+import { deleteSchedule } from "@/lib/delete-schedule";
 
 // Async function to fetch data from the API
 async function getMyData(): Promise<Reminder[]> {
@@ -37,10 +38,28 @@ export default function RemindersList() {
     getMyData().then(setData);
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, clientSchedule: string, adminSchedule: string) => {
     await deleteReminder(id);
+
+    console.log("*" + clientSchedule + "*");
+    console.log("*" + adminSchedule + "*");
+
+    if (clientSchedule !== "") {
+      await deleteSchedule(clientSchedule);
+    } else {
+      console.log("No clientSchedule");
+    }
+
+    if (adminSchedule !== "") {
+      await deleteSchedule(adminSchedule);
+    } else {
+      console.log("No adminSchedule");
+    }
+
     setData((prevData) => prevData.filter((reminder) => reminder.ID !== id));
   };
+
+  const showLink = true; // Set this based on your condition
 
   return (
     <>
@@ -48,7 +67,7 @@ export default function RemindersList() {
       <div className="flex-1 space-y-4">
         <Link className="text-purple-500 font-semibold" href="../admin/reminders">Create Reminder</Link>
         {data.length > 0 ? (
-          <DataTable columns={columnsReminder(handleDelete)} data={data} />
+          <DataTable columns={columnsReminder(handleDelete, showLink)} data={data} />
         ) : (
           <p>No results found.</p>
         )}
