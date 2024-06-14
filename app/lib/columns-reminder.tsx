@@ -2,6 +2,8 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import Link from 'next/link';
+import React from "react";
+import { Button } from "@/components/ui/button";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -19,7 +21,7 @@ export type Reminder = {
   adminName: string
 };
 
-export const columnsReminder: ColumnDef<Reminder>[] = [
+export const columnsReminder = (handleDelete: (id: number) => void): ColumnDef<Reminder>[] => [
   {
     accessorKey: "ID",
     header: "ID",
@@ -65,14 +67,17 @@ export const columnsReminder: ColumnDef<Reminder>[] = [
     header: "Admin name",
   },
   {
-    accessorKey: 'ID', // assuming 'id' is the unique identifier for each reminder
+    accessorKey: 'ID', // assuming 'ID' is the unique identifier for each reminder
     header: 'Actions',
     cell: ({ row }) => (
       <div className="flex space-x-2">
         <Link href={`/admin/reminders?id=${row.getValue("ID")}`}>
           View
         </Link>
+        <Button onClick={() => handleDelete(row.getValue("ID"))}>
+          Delete
+        </Button>
       </div>
     ),
   },
-]
+];

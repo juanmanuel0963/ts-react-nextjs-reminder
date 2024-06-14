@@ -1,9 +1,11 @@
 "use client";
+
 import { Reminder, columnsReminder } from "@/lib/columns-reminder";
 import { DataTable } from "@/components/ui/data-table";
 import Link from 'next/link';
 import React from "react";
 import { getSessionForClient } from "@/lib/actions";
+import { deleteReminder } from "@/lib/delete-reminder";
 
 // Async function to fetch data from the API
 async function getMyData(): Promise<Reminder[]> {
@@ -35,13 +37,18 @@ export default function RemindersList() {
     getMyData().then(setData);
   }, []);
 
+  const handleDelete = async (id: number) => {
+    await deleteReminder(id);
+    setData((prevData) => prevData.filter((reminder) => reminder.ID !== id));
+  };
+
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight my-4">Reminders Directory</h2>
       <div className="flex-1 space-y-4">
         <Link className="text-purple-500 font-semibold" href="../admin/reminders">Create Reminder</Link>
         {data.length > 0 ? (
-          <DataTable columns={columnsReminder} data={data} />
+          <DataTable columns={columnsReminder(handleDelete)} data={data} />
         ) : (
           <p>No results found.</p>
         )}
