@@ -1,6 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
+import Link from 'next/link';
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -52,5 +53,14 @@ export const columnsClient: ColumnDef<Client>[] = [
   {
     accessorKey: "adminSurName",
     header: "Admin Sur name",
+  },  
+  {
+    accessorKey: 'actions', // Use a unique accessorKey for the Actions column
+    header: 'Actions',
+    cell: ({ row }) => (
+      <Link href={`/admin/clients?id=${row.getValue("ID")}`}>
+        View
+      </Link>
+    ),
   },  
 ]

@@ -59,7 +59,7 @@ export default function RemindersList() {
     setData((prevData) => prevData.filter((reminder) => reminder.ID !== id));
   };
 
-  const showLink = true; // Set this based on your condition
+  const showLink = false; // Set this based on your condition
 
   return (
     <>
