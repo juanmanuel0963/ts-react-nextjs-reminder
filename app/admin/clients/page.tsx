@@ -1,9 +1,11 @@
-"use client"
+// pages/admins.tsx
+
+"use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Form,
   FormControl,
@@ -13,28 +15,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import * as z from "zod";
-import { getSessionForClient } from "@/lib/actions"
+import { getSessionForClient } from "@/lib/actions";
+import { submitClient } from "@/lib/submitClient";
+import React, { useEffect, useState } from "react";
 
-const formSchema = z
-  .object({
-    first_name: z.string().min(1, {
-      message: "First name is required",
-    }),
-    sur_name: z.string().min(1, {
-      message: "Sur name is required",
-    }),
-    country_code: z.string().min(1, {
-      message: "Country code is required",
-    }),
-    phone_number: z.string().min(1, {
-      message: "Phone number is required",
-    }),
-    email: z.string().email(),
-  });
+const formSchema = z.object({
+  first_name: z.string().min(1, {
+    message: "First name is required",
+  }),
+  sur_name: z.string().min(1, {
+    message: "Sur name is required",
+  }),
+  country_code: z.string().min(1, {
+    message: "Country code is required",
+  }),
+  phone_number: z.string().min(1, {
+    message: "Phone number is required",
+  }),
+  email: z.string().email(),
+});
 
 export default function Admins() {
-
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
+  const [isLoading, setIsLoading] = useState(false); // Example loading state
+
+  console.log('Client Id Querystring: ', id);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,54 +54,71 @@ export default function Admins() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  useEffect(() => {
+    if (id) {
+      fetchClientData(id);
+    }
+  }, [id]);
 
-    const session = await getSessionForClient()
-    const jsonSession = JSON.parse(session)
+  const fetchClientData = async (clientId: string) => {
+    try {
+     // setIsLoading(true); // Set loading state before API call
 
-    let bodyData = {
-      firstName: data.first_name,
-      surName: data.sur_name,
-      email: data.email,
-      countryCode: data.country_code,
-      phoneNumber: data.phone_number,
-      isSuperAdmin: false,
-      adminId: jsonSession.adminId
-    };
+      const session = await getSessionForClient();
+      const jsonSession = JSON.parse(session);
 
-    console.log('Current Admin Id: ', jsonSession.adminId);
-    console.log('Is Admin logged in: ', jsonSession.isLoggedIn);
-    console.log('Form submitted: ', { data });
-    console.log(JSON.stringify(bodyData));
+      console.log('clientId: ', clientId);
 
-    const res = fetch('https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients', {
-      method: 'POST',
-      body: JSON.stringify(bodyData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-
-        // Assuming the data returned includes an indication of successful creation
-        if (data.ID > 0) {
-          console.log(data.ID);
-          alert("Client created successfully.");
-          router.push(`./clients-list/`);
-        } else {
-          // Handle errors
-          console.log(data);
-          alert("Client not created. " + data.error);
-        }
-      })
-      .catch((error) => {
-        // Handle errors
-        alert("Client not created. " + error);
-        console.log(error);
+      const response = await fetch(`https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients?clientId=${clientId}`, {
+        method: 'GET',
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch client data');
+      }
+
+      const data = await response.json();
+
+      console.log('Client data: ', data);
+      console.log('ID: ', data[0].ID);
+      console.log('first_name: ', data[0].firstName);
+
+      form.reset({
+        first_name: data[0].firstName,
+        sur_name: data[0].surName,
+        country_code: data[0].countryCode,
+        phone_number: data[0].phoneNumber,
+        email: data[0].email,
+      });
+
+    } catch (error) {
+      console.error("Error fetching client data:", error);
+      alert("Error fetching client data. " + error);
+    } finally {
+      setIsLoading(false); // Reset loading state after API call
+    }
+  };
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsLoading(true); // Set loading state before API call
+
+    try {
+      const { success, message, error } = await submitClient(data, formSchema, id, id ? 'PUT' : 'POST');
+
+      if (success) {
+        alert(message);
+        router.push('./clients-list/');
+      } else {
+        alert(error);
+      }
+    } finally {
+      setIsLoading(false); // Reset loading state after API call
+    }
   };
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight my-4">Create Client</h2>
+      <h2 className="text-3xl font-bold tracking-tight my-4">{id ? "Edit Client" : "Create Client"}</h2>
       <div className="flex-1 space-y-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -170,12 +194,11 @@ export default function Admins() {
               <div></div>
             </div>
             <Button type="submit" className="w-full focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
-              Submit
+              {isLoading ? 'Submitting...' : 'Submit'}
             </Button>
           </form>
         </Form>
       </div>
     </>
   );
-};
-
+}

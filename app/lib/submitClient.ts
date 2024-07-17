@@ -1,30 +1,12 @@
+// lib/submitClient.ts
 "use server";
 
-import { z } from "zod";
-import { getSessionForClient } from "@/lib/actions";
-//import { NextRouter } from "next/router";
-import { useRouter, useSearchParams } from 'next/navigation';
-const formSchema = z.object({
-  first_name: z.string().min(1, {
-    message: "First name is required",
-  }),
-  sur_name: z.string().min(1, {
-    message: "Sur name is required",
-  }),
-  country_code: z.string().min(1, {
-    message: "Country code is required",
-  }),
-  phone_number: z.string().min(1, {
-    message: "Phone number is required",
-  }),
-  email: z.string().email(),
-});
+import { getSessionForClient } from "./actions";
+import * as z from "zod";
 
-export const onSubmit = async (
-  data: z.infer<typeof formSchema>,
-  id: string | null,
-  router: any
-) => {
+const API_ENDPOINT = 'https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients';
+
+export const submitClient = async (data: z.infer<typeof formSchema>, formSchema: z.ZodObject<any, any>, id: string | null, method: string) => {
   const session = await getSessionForClient();
   const jsonSession = JSON.parse(session);
 
@@ -44,28 +26,28 @@ export const onSubmit = async (
   console.log(JSON.stringify(bodyData));
 
   const url = id
-    ? `https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients/${id}`
-    : 'https://j3aovbsud0.execute-api.us-east-1.amazonaws.com/rmdx_clients';
-  const method = id ? 'PUT' : 'POST';
+    ? `${API_ENDPOINT}?id=${id}`
+    : API_ENDPOINT;
 
   try {
-    const res = await fetch(url, {
+    const response = await fetch(url, {
       method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Request-Method': method, // Explicitly mentioning the method for CORS preflight
+        'Access-Control-Request-Headers': 'Content-Type' // Explicitly mentioning headers for CORS preflight
+      },
       body: JSON.stringify(bodyData),
     });
 
-    const response = await res.json();
+    const responseData = await response.json();
 
-    if (response.ID > 0) {
-      console.log(response.ID);
-      alert("Client created/updated successfully.");
-      router.push(`./clients-list/`);
+    if (response.ok) {
+      return { success: true, message: id ? "Client updated successfully." : "Client created successfully." };
     } else {
-      console.log(response);
-      alert("Client not created/updated. " + response.error);
+      return { success: false, error: `Client 1 not ${id ? "updated" : "created"}. ${responseData.error}` };
     }
   } catch (error) {
-    alert("Client not created/updated. " + error);
-    console.log(error);
+    return { success: false, error: `Client 2 not ${id ? "updated" : "created"}. ${error}` };
   }
 };
