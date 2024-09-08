@@ -39,7 +39,7 @@ export default function ClientsList() {
     <>
       <h2 className="text-3xl font-bold tracking-tight my-4">Admins Directory</h2>
       <div className="flex-1 space-y-4">
-        <Link className="text-purple-500 font-semibold" href="../admin/clients">Create Admin</Link>
+        <Link className="text-purple-500 font-semibold" href="../admin/admins">Create Admin</Link>
         {data.length > 0 ? (
           <DataTable columns={columnsAdmin} data={data} />
         ) : (

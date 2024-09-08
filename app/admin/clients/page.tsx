@@ -35,7 +35,7 @@ const formSchema = z.object({
   email: z.string().email(),
 });
 
-export default function Admins() {
+export default function Clients() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
